@@ -1,4 +1,4 @@
-﻿#region
+#region
 
 using System;
 using System.Collections.Generic;
@@ -70,6 +70,12 @@ namespace Cassio
             Config.SubMenu("Drawings")
                 .AddItem(
                     new MenuItem("ERange", "E range").SetValue(new Circle(false, Color.FromArgb(255, 255, 255, 255))));
+
+            Config.AddSubMenu(new Menu("Extra", "Extra"));
+            Config.SubMenu("Extra")
+                .AddItem(new MenuItem("Passive", "Keep Passive Up").SetValue(new KeyBind(114, KeyBindType.Toggle)));
+            Config.SubMenu("Extra")
+                .AddItem(new MenuItem("Minions", "Use Q on minions").SetValue(true));
             Config.AddToMainMenu();
 
             Drawing.OnDraw += Drawing_OnDraw;
@@ -112,6 +118,14 @@ namespace Cassio
         {
             if (Config.Item("ComboActive").GetValue<KeyBind>().Active)
                 ExecuteCombo();
+
+            if (Config.Item("Passive").GetValue<KeyBind>().Active)
+                KeepPassiveUp();
+            
+            //foreach (var buff in ObjectManager.Player.Buffs) {
+            //    if (buff.Name == "cassiopeiadeadlycadence")
+            //        Game.PrintChat("Working");
+            //}
         }
 
         private static bool IsPoisoned(Obj_AI_Base unit)
@@ -119,6 +133,39 @@ namespace Cassio
             return
                 unit.Buffs.Where(buff => buff.IsActive && buff.Type == BuffType.Poison)
                     .Any(buff => buff.EndTime >= (Game.Time + 0.35 + 700 / 1900));
+        }
+
+        private static bool IsPassiveReady()
+        {
+            return ObjectManager.Player.Buffs.Where(buff => buff.IsActive && (buff.Name == "cassiopeiadeadlycadence" || buff.Name == "CassiopeiaDeadlyCadence"))
+                .Any(buff => buff.EndTime <= (Game.Time + 0.6 + Game.Ping / 200));
+        }
+
+        private static void KeepPassiveUp()
+        {
+            if (!Q.IsReady() || !IsPassiveReady())
+                return;
+
+            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget()))
+            {
+                if (SharpDX.Vector2.Distance(hero.ServerPosition.To2D(), hero.ServerPosition.To2D()) < Q.Range)
+                    Q.Cast(hero, true, true);
+            }
+
+            if (Config.Item("Minions").GetValue<bool>())
+            { 
+                foreach (var minion in ObjectManager.Get<Obj_AI_Minion>().Where(minion => minion.IsValidTarget()))
+                {
+                    if (SharpDX.Vector2.Distance(minion.ServerPosition.To2D(), minion.ServerPosition.To2D()) < Q.Range)
+                        Q.Cast(minion, true, true);
+                }
+            }
+
+            if (Game.CursorPos.To2D().Distance(ObjectManager.Player) < Q.Range) 
+                Q.Cast(Game.CursorPos);
+            else
+                Q.Cast(ObjectManager.Player.Position.To2D().Extend(Game.CursorPos.To2D(), Q.Range-Q.Width)); 
+  
         }
 
         private static void ExecuteCombo()
