@@ -123,12 +123,11 @@ namespace Tracker
         public void CreateRenderObjects()
         {
             //Create the minimap sprite.
+
             if (Range == 1100)
             {
                 _minimapSprite = new Render.Sprite(WardData.Bitmap, MinimapPosition);
-                _minimapSprite.Scale = new Vector2(0.7f, 0.7f);
-                _minimapSprite.PositionUpdate += () => MinimapPosition;
-                _minimapSprite.VisibleCondition += sender => WardTracker.Config.Item("Enabled").GetValue<bool>();
+                _minimapSprite.Scale = new Vector2(_scale, _scale);
                 _minimapSprite.Add(0);
             }
 
@@ -137,13 +136,13 @@ namespace Tracker
             _defaultCircle.VisibleCondition +=
                 sender =>
                     WardTracker.Config.Item("Enabled").GetValue<bool>() &&
-                    !WardTracker.Config.Item("Details").GetValue<KeyBind>().Active;
+                    !WardTracker.Config.Item("Details").GetValue<KeyBind>().Active && Render.OnScreen(Drawing.WorldToScreen(Position));
             _defaultCircle.Add(0);
             _defaultCircleFilled = new Render.Circle(Position, 200, Color.FromArgb(25, Color), -142857, true);
             _defaultCircleFilled.VisibleCondition +=
                 sender =>
                     WardTracker.Config.Item("Enabled").GetValue<bool>() &&
-                    !WardTracker.Config.Item("Details").GetValue<KeyBind>().Active;
+                    !WardTracker.Config.Item("Details").GetValue<KeyBind>().Active && Render.OnScreen(Drawing.WorldToScreen(Position));
             _defaultCircleFilled.Add(-1);
 
             //Create the circle that shows the range
@@ -175,7 +174,7 @@ namespace Tracker
                 _missileLine.Add(0);
             }
 
-
+           
             //Create the timer text:
             if (Duration != int.MaxValue)
             {
@@ -183,18 +182,12 @@ namespace Tracker
                 _timerText.OutLined = true;
                 _timerText.PositionUpdate = () => Drawing.WorldToScreen(Position);
                 _timerText.Centered = true;
-                _timerText.VisibleCondition += sender => WardTracker.Config.Item("Enabled").GetValue<bool>();
+                _timerText.VisibleCondition += sender => WardTracker.Config.Item("Enabled").GetValue<bool>() && Render.OnScreen(Drawing.WorldToScreen(Position));
 
-                _timerText.TextUpdate = delegate
-                {
-                    var t = TimeSpan.FromSeconds((EndT - Environment.TickCount) / 1000f);
-
-
-                    return (IsFromMissile ? "?? " : "") +
-                           (t.Minutes != 0
-                               ? string.Format("{0:D1} : {1:D2}", t.Minutes, t.Seconds)
-                               : string.Format("{0:D2}", t.Seconds)) + (IsFromMissile ? " ??" : "");
-                };
+                _timerText.TextUpdate =
+                    () =>
+                        (IsFromMissile ? "?? " : "") + Utility.FormatTime((EndT - Environment.TickCount) / 1000f) +
+                        (IsFromMissile ? " ??" : "");
                 _timerText.Add(2);
             }
         }

@@ -198,7 +198,7 @@ namespace Tracker
 
                 foreach (var hero in
                     ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(hero => hero.IsValid && !hero.IsMe && hero.IsHPBarRendered && (hero.IsEnemy && Config.Item("TrackEnemies").GetValue<bool>() || hero.IsAlly && Config.Item("TrackAllies").GetValue<bool>())))
+                        .Where(hero => hero != null && hero.IsValid && !hero.IsMe && hero.IsHPBarRendered && (hero.IsEnemy && Config.Item("TrackEnemies").GetValue<bool>() || hero.IsAlly && Config.Item("TrackAllies").GetValue<bool>())))
                 {
                     Sprite.Begin();
 
