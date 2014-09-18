@@ -74,14 +74,13 @@ namespace Annie
 
             IgniteSlot = ObjectManager.Player.GetSpellSlot("SummonerDot");
             FlashSlot = ObjectManager.Player.GetSpellSlot("SummonerFlash");
-
             Q = new Spell(SpellSlot.Q, 625f);
             W = new Spell(SpellSlot.W, 625f);
-            E = new Spell(SpellSlot.E, float.MaxValue);
+            E = new Spell(SpellSlot.E);
             R = new Spell(SpellSlot.R, 600f);
             R1 = new Spell(SpellSlot.R, 900f);
 
-            W.SetSkillshot(0.60f, 625f, float.MaxValue, false, SkillshotType.SkillshotCone);
+            W.SetSkillshot(0.60f, 0.872664626f, float.MaxValue, false, SkillshotType.SkillshotCone);
             R.SetSkillshot(0.20f, 200f, float.MaxValue, false, SkillshotType.SkillshotCircle);
             R1.SetSkillshot(0.25f, 200f, float.MaxValue, false, SkillshotType.SkillshotCircle);
 
@@ -104,6 +103,10 @@ namespace Annie
             Config.SubMenu("combo")
                 .AddItem(new MenuItem("flashCombo", "Targets needed to Flash -> R"))
                 .SetValue(new Slider(4, 5, 1));
+
+            Config.AddSubMenu(new Menu("Harass(Mixed Mode) settings", "harass"));
+            Config.SubMenu("harass").AddItem(new MenuItem("qHarass", "Harass with Q")).SetValue(true);
+            Config.SubMenu("harass").AddItem(new MenuItem("wHarass", "Harass with W")).SetValue(true);
 
             Config.AddSubMenu(new Menu("Farm Settings", "lasthit"));
             Config.SubMenu("lasthit").AddItem(new MenuItem("qFarm", "Last hit with Disintegrate (Q)").SetValue(true));
@@ -133,7 +136,7 @@ namespace Annie
             Drawing.OnDraw += OnDraw;
             Game.OnGameUpdate += OnGameUpdate;
             GameObject.OnCreate += OnCreateObject;
-            Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
+            Orbwalking.BeforeAttack += OrbwalkingBeforeAttack;
 
             Game.PrintChat("Annie# Loaded");
         }
@@ -159,7 +162,7 @@ namespace Annie
                 return;
             }
 
-            var missile = (Obj_SpellMissile)sender;
+            var missile = (Obj_SpellMissile) sender;
             if (!(missile.SpellCaster is Obj_AI_Hero) || !(missile.Target.IsMe))
             {
                 return;
@@ -171,9 +174,9 @@ namespace Annie
             }
             else if (!ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(missile.SpellCaster.NetworkId).IsMelee())
             {
-                var ecd = (int)(ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).CooldownExpires - Game.Time) *
+                var ecd = (int) (ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).CooldownExpires - Game.Time) *
                           1000;
-                if ((int)Vector3.Distance(missile.Position, ObjectManager.Player.ServerPosition) /
+                if ((int) Vector3.Distance(missile.Position, ObjectManager.Player.ServerPosition) /
                     ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(missile.SpellCaster.NetworkId)
                         .BasicAttack.MissileSpeed * 1000 > ecd)
                 {
@@ -192,6 +195,9 @@ namespace Annie
                 case Orbwalking.OrbwalkingMode.Combo:
                     Combo(target, flashRtarget);
                     break;
+                case Orbwalking.OrbwalkingMode.Mixed:
+                    Harass(target);
+                    break;
                 case Orbwalking.OrbwalkingMode.LastHit:
                     Farm(false);
                     break;
@@ -201,9 +207,21 @@ namespace Annie
             }
         }
 
-        private static void Orbwalking_BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
             args.Process = Environment.TickCount - DoingCombo > 500;
+        }
+
+        private static void Harass(Obj_AI_Base target)
+        {
+            if (Config.Item("qHarass").GetValue<bool>() && Q.IsReady())
+            {
+                Q.CastOnUnit(target, Config.Item("PCast").GetValue<bool>());
+            }
+            if (Config.Item("wHarass").GetValue<bool>() && W.IsReady())
+            {
+                W.CastOnUnit(target, Config.Item("PCast").GetValue<bool>());
+            }
         }
 
         private static void Combo(Obj_AI_Base target, Obj_AI_Base flashRtarget)
@@ -230,7 +248,7 @@ namespace Annie
                         DoingCombo = Environment.TickCount;
                         Q.CastOnUnit(target, Config.Item("PCast").GetValue<bool>());
                         Utility.DelayAction.Add(
-                            (int)(ObjectManager.Player.Distance(target) / Q.Speed * 1000 - 100 - Game.Ping / 2.0),
+                            (int) (ObjectManager.Player.Distance(target) / Q.Speed * 1000 - 100 - Game.Ping / 2.0),
                             () =>
                             {
                                 if (R.IsReady() &&
