@@ -357,8 +357,8 @@ namespace Annie
                 }
             }
             if ((!Orbwalker.ActiveMode.Equals(Orbwalking.OrbwalkingMode.LaneClear) ||
-                 (!Config.Item("qFarm").GetValue<bool>() || !Orbwalker.ActiveMode.Equals(Orbwalking.OrbwalkingMode.LastHit)) ||
-                 (!Config.Item("qFarmHarass").GetValue<bool>() || !Orbwalker.ActiveMode.Equals(Orbwalking.OrbwalkingMode.Mixed))) ||
+                 (!Config.Item("qFarm").GetValue<bool>() && Orbwalker.ActiveMode.Equals(Orbwalking.OrbwalkingMode.LastHit)) ||
+                 (!Config.Item("qFarmHarass").GetValue<bool>() && Orbwalker.ActiveMode.Equals(Orbwalking.OrbwalkingMode.Mixed))) ||
                 (Config.Item("saveqStun").GetValue<bool>() && StunCount == 4) || !Q.IsReady())
             {
                 return;
