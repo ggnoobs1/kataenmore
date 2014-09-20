@@ -356,14 +356,15 @@ namespace Annie
                     W.Cast(W.GetLineFarmLocation(minions).Position.To3D());
                 }
             }
-            if ((!Orbwalker.ActiveMode.Equals(Orbwalking.OrbwalkingMode.LaneClear) ||
-                 (!Config.Item("qFarm").GetValue<bool>() && Orbwalker.ActiveMode.Equals(Orbwalking.OrbwalkingMode.LastHit)) ||
-                 (!Config.Item("qFarmHarass").GetValue<bool>() && Orbwalker.ActiveMode.Equals(Orbwalking.OrbwalkingMode.Mixed))) ||
-                (Config.Item("saveqStun").GetValue<bool>() && StunCount == 4) || !Q.IsReady())
+            if (((!Config.Item("qFarm").GetValue<bool>() ||
+                  !Orbwalker.ActiveMode.Equals(Orbwalking.OrbwalkingMode.LastHit)) &&
+                 (!Config.Item("qFarmHarass").GetValue<bool>() ||
+                  !Orbwalker.ActiveMode.Equals(Orbwalking.OrbwalkingMode.Mixed)) &&
+                 !Orbwalker.ActiveMode.Equals(Orbwalking.OrbwalkingMode.LaneClear)) ||
+                Config.Item("saveqStun").GetValue<bool>() && StunCount == 4 || !Q.IsReady())
             {
                 return;
             }
-
             foreach (var minion in
                 from minion in
                     minions.OrderByDescending(Minions => Minions.MaxHealth)
