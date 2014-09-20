@@ -105,6 +105,8 @@ namespace Annie
                 .SetValue(new Slider(4, 5, 1));
 
             Config.AddSubMenu(new Menu("Harass(Mixed Mode) settings", "harass"));
+            Config.SubMenu("harass")
+                .AddItem(new MenuItem("qFarmHarass", "Last hit with Disintegrate (Q)").SetValue(true));
             Config.SubMenu("harass").AddItem(new MenuItem("qHarass", "Harass with Q")).SetValue(true);
             Config.SubMenu("harass").AddItem(new MenuItem("wHarass", "Harass with W")).SetValue(true);
 
@@ -196,6 +198,7 @@ namespace Annie
                     Combo(target, flashRtarget);
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
+                    Farm(false);
                     Harass(target);
                     break;
                 case Orbwalking.OrbwalkingMode.LastHit:
@@ -353,9 +356,12 @@ namespace Annie
                     W.Cast(W.GetLineFarmLocation(minions).Position.To3D());
                 }
             }
-
-            if (!Config.Item("qFarm").GetValue<bool>() || (Config.Item("saveqStun").GetValue<bool>() && StunCount == 4) ||
-                !Q.IsReady())
+            if ((!Orbwalker.ActiveMode.Equals(Orbwalking.OrbwalkingMode.LaneClear) ||
+                 (!Config.Item("qFarm").GetValue<bool>() &&
+                  !Orbwalker.ActiveMode.Equals(Orbwalking.OrbwalkingMode.LastHit)) ||
+                 (!Config.Item("qFarmHarass").GetValue<bool>() &&
+                  !Orbwalker.ActiveMode.Equals(Orbwalking.OrbwalkingMode.Mixed))) ||
+                (Config.Item("saveqStun").GetValue<bool>() && StunCount == 4) || !Q.IsReady())
             {
                 return;
             }
