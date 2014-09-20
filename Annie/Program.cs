@@ -74,13 +74,14 @@ namespace Annie
 
             IgniteSlot = ObjectManager.Player.GetSpellSlot("SummonerDot");
             FlashSlot = ObjectManager.Player.GetSpellSlot("SummonerFlash");
+
             Q = new Spell(SpellSlot.Q, 625f);
             W = new Spell(SpellSlot.W, 625f);
             E = new Spell(SpellSlot.E);
             R = new Spell(SpellSlot.R, 600f);
             R1 = new Spell(SpellSlot.R, 900f);
 
-            W.SetSkillshot(0.60f, 0.872664626f, float.MaxValue, false, SkillshotType.SkillshotCone);
+            W.SetSkillshot(0.60f, 50f * (float)Math.PI / 180, float.MaxValue, false, SkillshotType.SkillshotCone);
             R.SetSkillshot(0.20f, 200f, float.MaxValue, false, SkillshotType.SkillshotCircle);
             R1.SetSkillshot(0.25f, 200f, float.MaxValue, false, SkillshotType.SkillshotCircle);
 
