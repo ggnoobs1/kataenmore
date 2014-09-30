@@ -131,13 +131,13 @@ namespace Darius
         {
             if (!target.IsValidTarget(_r.Range) || !_r.IsReady()) return;
 
-            if (!(DamageLib.getDmg(target, DamageLib.SpellType.R, DamageLib.StageType.FirstDamage) > target.Health))
+            if (!(ObjectManager.Player.GetSpellDamage(target, SpellSlot.Q, 1) > target.Health))
             {
                 foreach (var buff in target.Buffs)
                 {
                     if (buff.Name == "dariushemo")
                     {
-                        if (DamageLib.getDmg(target, DamageLib.SpellType.R, DamageLib.StageType.FirstDamage) *
+                        if (ObjectManager.Player.GetSpellDamage(target, SpellSlot.R, 1) *
                             (1 + buff.Count / 5) - 1 > target.Health)
                         {
                             _r.CastOnUnit(target, true);
@@ -145,7 +145,7 @@ namespace Darius
                     }
                 }
             }
-            else if (DamageLib.getDmg(target, DamageLib.SpellType.R, DamageLib.StageType.FirstDamage) - 15 >
+            else if (ObjectManager.Player.GetSpellDamage(target, SpellSlot.R, 1) - 15 >
                      target.Health)
             {
                 _r.CastOnUnit(target, true);
@@ -172,10 +172,13 @@ namespace Darius
                 CastR(champion);
                 if (_r.IsReady()) continue;
 
-                if (IgniteSlot != SpellSlot.Unknown &&
-                    ObjectManager.Player.SummonerSpellbook.CanUseSpell(IgniteSlot) == SpellState.Ready &&
-                    DamageLib.getDmg(champion, DamageLib.SpellType.IGNITE) - 5 > champion.Health)
-                    ObjectManager.Player.SummonerSpellbook.CastSpell(IgniteSlot, champion);
+                if (IgniteSlot != SpellSlot.Unknown && ObjectManager.Player.SummonerSpellbook.CanUseSpell(IgniteSlot) == SpellState.Ready && ObjectManager.Player.Distance(champion) < 600)
+                {
+                    if (ObjectManager.Player.GetSummonerSpellDamage(champion, Damage.SummonerSpell.Ignite) > champion.Health)
+                    {
+                        ObjectManager.Player.SummonerSpellbook.CastSpell(IgniteSlot, champion);
+                    }
+                }
             }
         }
 
@@ -197,10 +200,13 @@ namespace Darius
                 CastR(target);
 
             if (_r.IsReady()) return;
-            if (IgniteSlot != SpellSlot.Unknown &&
-                ObjectManager.Player.SummonerSpellbook.CanUseSpell(IgniteSlot) == SpellState.Ready &&
-                DamageLib.getDmg(target, DamageLib.SpellType.IGNITE) - 5 > target.Health)
-                ObjectManager.Player.SummonerSpellbook.CastSpell(IgniteSlot, target);
+            if (IgniteSlot != SpellSlot.Unknown && ObjectManager.Player.SummonerSpellbook.CanUseSpell(IgniteSlot) == SpellState.Ready && ObjectManager.Player.Distance(target) < 600)
+            {
+                if (ObjectManager.Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite) > target.Health)
+                {
+                    ObjectManager.Player.SummonerSpellbook.CastSpell(IgniteSlot, target);
+                }
+            }
         }
     }
 }
