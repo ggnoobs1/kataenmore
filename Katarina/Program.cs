@@ -45,7 +45,7 @@ namespace Katarina
             R = new Spell(SpellSlot.R, 500);
 
             IgniteSlot = ObjectManager.Player.GetSpellSlot("SummonerDot");
-            DFG = Utility.Map.GetMap() == Utility.Map.MapType.TwistedTreeline || Utility.Map.GetMap() == Utility.Map.MapType.CrystalScar ? new Items.Item(3188, 750) : new Items.Item(3128, 750);
+            DFG = Utility.Map.GetMap()._MapType == Utility.Map.MapType.TwistedTreeline || Utility.Map.GetMap()._MapType == Utility.Map.MapType.CrystalScar ? new Items.Item(3188, 750) : new Items.Item(3128, 750);
 
             SpellList.Add(Q);
             SpellList.Add(W);
@@ -95,6 +95,14 @@ namespace Katarina
                     new MenuItem("LaneClearActive", "LaneClear!").SetValue(
                         new KeyBind(Config.Item("LaneClear").GetValue<KeyBind>().Key, KeyBindType.Press)));
 
+            var dmgAfterComboItem = new MenuItem("DamageAfterCombo", "Draw damage after combo").SetValue(true);
+            Utility.HpBarDamageIndicator.DamageToUnit = GetComboDamage;
+            Utility.HpBarDamageIndicator.Enabled = dmgAfterComboItem.GetValue<bool>();
+            dmgAfterComboItem.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs)
+            {
+                Utility.HpBarDamageIndicator.Enabled = eventArgs.GetNewValue<bool>();
+            };
+
             Config.AddSubMenu(new Menu("Drawings", "Drawings"));
             Config.SubMenu("Drawings")
                 .AddItem(new MenuItem("QRange", "Q range").SetValue(new Circle(false, Color.FromArgb(100, 255, 0, 255))));
@@ -104,6 +112,8 @@ namespace Katarina
                 .AddItem(new MenuItem("ERange", "E range").SetValue(new Circle(false, Color.FromArgb(100, 255, 0, 255))));
             Config.SubMenu("Drawings")
                 .AddItem(new MenuItem("RRange", "R range").SetValue(new Circle(false, Color.FromArgb(100, 255, 0, 255))));
+            Config.SubMenu("Drawings")
+                .AddItem(dmgAfterComboItem);
             Config.AddToMainMenu();
 
             Drawing.OnDraw += Drawing_OnDraw;
@@ -144,27 +154,21 @@ namespace Katarina
             var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
             if (target == null) return;
 
-            if (E.IsReady() && DamageLib.IsKillable(target, new[] {DamageLib.SpellType.E}) &&
+            if (E.IsReady() && E.IsKillable(target, 1) &&
                 ObjectManager.Player.Distance(target) < E.Range + target.BoundingRadius)
                 E.CastOnUnit(target, true);
 
-            if (Q.IsReady() &&
-                DamageLib.IsKillable(target,
-                    new[] {Tuple.Create(DamageLib.SpellType.Q, DamageLib.StageType.FirstDamage)}) &&
+            if (Q.IsReady() && Q.IsKillable(target, 1) &&
                 ObjectManager.Player.Distance(target) < Q.Range + target.BoundingRadius)
                 Q.CastOnUnit(target, true);
 
-            if (W.IsReady() && DamageLib.IsKillable(target, new[] {DamageLib.SpellType.W}) &&
+            if (W.IsReady() && W.IsKillable(target) &&
                 ObjectManager.Player.Distance(target) < W.Range)
                 W.Cast();
 
             if (Q.IsReady() && E.IsReady() &&
-                DamageLib.IsKillable(target,
-                    new[]
-                    {
-                        Tuple.Create(DamageLib.SpellType.Q, DamageLib.StageType.FirstDamage),
-                        Tuple.Create(DamageLib.SpellType.E, DamageLib.StageType.Default)
-                    }) &&
+                ObjectManager.Player.IsKillable(target,
+                    new[] {Tuple.Create(SpellSlot.Q, 1), Tuple.Create(SpellSlot.E, 0)}) &&
                 ObjectManager.Player.Distance(target) < Q.Range + target.BoundingRadius)
             {
                 Q.CastOnUnit(target, true);
@@ -172,7 +176,8 @@ namespace Katarina
             }
 
             if (Q.IsReady() && E.IsReady() && W.IsReady() &&
-                DamageLib.IsKillable(target, new[] {DamageLib.SpellType.Q, DamageLib.SpellType.W, DamageLib.SpellType.E}) &&
+                ObjectManager.Player.IsKillable(target,
+                    new[] {Tuple.Create(SpellSlot.Q, 0), Tuple.Create(SpellSlot.E, 0), Tuple.Create(SpellSlot.W, 0)}) &&
                 ObjectManager.Player.Distance(target) < Q.Range + target.BoundingRadius)
             {
                 Q.Cast(target);
@@ -183,11 +188,13 @@ namespace Katarina
                 }
             }
 
-            if (IgniteSlot != SpellSlot.Unknown &&
-                ObjectManager.Player.SummonerSpellbook.CanUseSpell(IgniteSlot) == SpellState.Ready &&
-                ObjectManager.Player.Distance(target) < 600 &&
-                DamageLib.IsKillable(target, new[] {DamageLib.SpellType.IGNITE}))
-                ObjectManager.Player.SummonerSpellbook.CastSpell(IgniteSlot, target);
+            if (IgniteSlot != SpellSlot.Unknown && ObjectManager.Player.SummonerSpellbook.CanUseSpell(IgniteSlot) == SpellState.Ready && ObjectManager.Player.Distance(target) < 600)
+            {
+                if (ObjectManager.Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite) > target.Health)
+                {
+                    ObjectManager.Player.SummonerSpellbook.CastSpell(IgniteSlot, target);
+                }
+            }
         }
 
         private static void ExecuteSkills()
@@ -195,7 +202,7 @@ namespace Katarina
             var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
             if (target == null) return;
 
-            if ((GetDamage(target) > target.Health))
+            if ((GetComboDamage(target) > target.Health))
             {
                 if (DFG.IsReady() && ObjectManager.Player.Distance(target) < DFG.Range + target.BoundingRadius)
                     DFG.Cast(target);
@@ -216,7 +223,7 @@ namespace Katarina
                     ObjectManager.Player.SummonerSpellbook.CastSpell(IgniteSlot, target);
 
             }
-            else if (!(GetDamage(target) > target.Health))
+            else if (!(GetComboDamage(target) > target.Health))
             {
                 if (Q.IsReady() && ObjectManager.Player.Distance(target) < Q.Range)
                     Q.CastOnUnit(target, true);
@@ -242,7 +249,7 @@ namespace Katarina
             if (useQ && Q.IsReady())
             {
                 foreach (var minion in allMinions.Where(minion => minion.IsValidTarget() && HealthPrediction.GetHealthPrediction(minion, (int)(ObjectManager.Player.Distance(minion) * 1000 / 1400))
-                < 0.75 * DamageLib.getDmg(minion, DamageLib.SpellType.Q, DamageLib.StageType.FirstDamage)))
+                < 0.75 * ObjectManager.Player.GetSpellDamage(minion, SpellSlot.Q, 1)))
                 {
                     Q.Cast(minion);
                     return;
@@ -250,7 +257,7 @@ namespace Katarina
             }
             else if (useW && W.IsReady())
             {
-                if (!allMinions.Any(minion => minion.IsValidTarget(W.Range) && minion.Health < 0.75*DamageLib.getDmg(minion, DamageLib.SpellType.W))) return;
+                if (!allMinions.Any(minion => minion.IsValidTarget(W.Range) && minion.Health < 0.75 * ObjectManager.Player.GetSpellDamage(minion, SpellSlot.W))) return;
                 W.Cast();
                 return;
             }
@@ -265,15 +272,29 @@ namespace Katarina
                     W.Cast(minion);
             }
         }
-        private static double GetDamage(Obj_AI_Base unit)
+
+        private static float GetComboDamage(Obj_AI_Base enemy)
         {
-            double damage = 0;
-            if (Q.IsReady()) damage += DamageLib.getDmg(unit, DamageLib.SpellType.Q);
-            if (W.IsReady()) damage += DamageLib.getDmg(unit, DamageLib.SpellType.W);
-            if (E.IsReady()) damage += DamageLib.getDmg(unit, DamageLib.SpellType.E);
-            if (R.IsReady()) damage += DamageLib.getDmg(unit, DamageLib.SpellType.R, DamageLib.StageType.FirstDamage) * 7;
-            if (IgniteSlot != SpellSlot.Unknown && ObjectManager.Player.SummonerSpellbook.CanUseSpell(IgniteSlot) == SpellState.Ready) damage += DamageLib.getDmg(unit, DamageLib.SpellType.IGNITE);
-            return damage * (DFG.IsReady() ? 1.2f : 1);
+            var damage = 0d;
+
+            if (Q.IsReady(420))
+                damage += ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.Q);
+
+            if (DFG.IsReady())
+                damage += ObjectManager.Player.GetItemDamage(enemy, Damage.DamageItems.Dfg) / 1.2;
+
+            if (W.IsReady())
+                damage += ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.W);
+
+            if (E.IsReady())
+                damage += ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.E);
+
+            if (IgniteSlot != SpellSlot.Unknown && ObjectManager.Player.SummonerSpellbook.CanUseSpell(IgniteSlot) == SpellState.Ready)
+                damage += ObjectManager.Player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
+
+            if (R.IsReady())
+                damage += ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.R, 1)*8;
+            return (float)damage * (DFG.IsReady() ? 1.2f : 1);
         }
     }
 }
