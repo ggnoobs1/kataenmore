@@ -81,6 +81,7 @@ namespace Annie
             R = new Spell(SpellSlot.R, 600f);
             R1 = new Spell(SpellSlot.R, 900f);
 
+            Q.SetTargetted(0.25f, 1400f);
             W.SetSkillshot(0.60f, 50f * (float) Math.PI / 180, float.MaxValue, false, SkillshotType.SkillshotCone);
             R.SetSkillshot(0.20f, 200f, float.MaxValue, false, SkillshotType.SkillshotCircle);
             R1.SetSkillshot(0.25f, 200f, float.MaxValue, false, SkillshotType.SkillshotCircle);
@@ -100,9 +101,11 @@ namespace Annie
 
             Config.AddSubMenu(targetSelectorMenu);
             Config.AddSubMenu(new Menu("Combo settings", "combo"));
-            Config.SubMenu("combo").AddItem(new MenuItem("comboItems", "Use Items")).SetValue(true);
+            Config.SubMenu("combo").AddItem(new MenuItem("qCombo", "Use Q")).SetValue(true);
+            Config.SubMenu("combo").AddItem(new MenuItem("wCombo", "Use W")).SetValue(true);
+            Config.SubMenu("combo").AddItem(new MenuItem("rCombo", "Use R")).SetValue(true);
             Config.SubMenu("combo")
-                .AddItem(new MenuItem("flashCombo", "Targets needed to Flash -> R"))
+                .AddItem(new MenuItem("flashCombo", "Targets needed to Flash -> R(stun)"))
                 .SetValue(new Slider(4, 5, 1));
 
             Config.AddSubMenu(new Menu("Harass(Mixed Mode) settings", "harass"));
@@ -117,6 +120,12 @@ namespace Annie
             Config.SubMenu("lasthit")
                 .AddItem(new MenuItem("saveqStun", "Don't Last Hit with Q while stun is up").SetValue(true));
             Config.AddSubMenu(new Menu("Draw Settings", "draw"));
+
+            Config.AddSubMenu(new Menu("Misc", "misc"));
+            Config.SubMenu("misc").AddItem(new MenuItem("PCast", "Packet Cast Spells").SetValue(true));
+            Config.SubMenu("misc").AddItem(new MenuItem("autoShield", "Auto shield agaisnt AAs").SetValue(false));
+            Config.SubMenu("misc").AddItem(new MenuItem("suppMode", "Support mode").SetValue(false));
+            
             Config.SubMenu("draw")
                 .AddItem(
                     new MenuItem("QDraw", "Draw Disintegrate (Q) Range").SetValue(
@@ -133,7 +142,7 @@ namespace Annie
                 .AddItem(
                     new MenuItem("R1Draw", "Draw Flash -> R combo Range").SetValue(
                         new Circle(true, Color.FromArgb(128, 128, 0, 128))));
-            Config.AddItem(new MenuItem("PCast", "Packet Cast Spells").SetValue(true));
+            
             Config.AddToMainMenu();
 
             Drawing.OnDraw += OnDraw;
@@ -160,7 +169,7 @@ namespace Annie
 
         private static void OnCreateObject(GameObject sender, EventArgs args)
         {
-            if (sender.IsAlly || !(sender is Obj_SpellMissile))
+            if (sender.IsAlly || !(sender is Obj_SpellMissile) || !Config.Item("autoShield").GetValue<bool>())
             {
                 return;
             }
@@ -183,7 +192,7 @@ namespace Annie
                     ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(missile.SpellCaster.NetworkId)
                         .BasicAttack.MissileSpeed * 1000 > ecd)
                 {
-                    Utility.DelayAction.Add(ecd, () => E.Cast());
+                    Utility.DelayAction.Add(ecd, () => E.Cast(ObjectManager.Player,true));
                 }
             }
         }
@@ -199,7 +208,10 @@ namespace Annie
                     Combo(target, flashRtarget);
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
-                    Farm(false);
+                    if (Config.Item("suppMode").GetValue<bool>())
+                    {
+                        Farm(false); 
+                    }
                     Harass(target);
                     break;
                 case Orbwalking.OrbwalkingMode.LastHit:
@@ -213,7 +225,7 @@ namespace Annie
 
         private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
-            args.Process = Environment.TickCount - DoingCombo > 500;
+            args.Process = Environment.TickCount > DoingCombo;
         }
 
         private static void Harass(Obj_AI_Base target)
@@ -230,59 +242,50 @@ namespace Annie
 
         private static void Combo(Obj_AI_Base target, Obj_AI_Base flashRtarget)
         {
-            Console.WriteLine("[" + Game.Time + "]Combo started");
-            if ((target == null && flashRtarget == null) || Environment.TickCount - DoingCombo < 500 ||
+            if ((target == null && flashRtarget == null) || Environment.TickCount < DoingCombo ||
                 (!Q.IsReady() && !W.IsReady() && !R.IsReady()))
             {
                 return;
             }
 
-            Console.WriteLine("[" + Game.Time + "]Target acquired");
             if (Config.Item("comboItems").GetValue<bool>() && target != null)
             {
                 Items.UseItem(3128, target);
             }
-
+            var useQ = Config.Item("qCombo").GetValue<bool>();
+            var useW = Config.Item("wCombo").GetValue<bool>();
+            var useR = Config.Item("rCombo").GetValue<bool>();
             switch (StunCount)
             {
                 case 3:
-                    Console.WriteLine("[" + Game.Time + "]Case 3");
-                    if (Q.IsReady())
+                    if (target==null)
+                    {
+                        return;
+                    }
+                    if (Q.IsReady() && useQ)
                     {
                         DoingCombo = Environment.TickCount;
-                        Q.CastOnUnit(target, Config.Item("PCast").GetValue<bool>());
+                        Q.Cast(target, Config.Item("PCast").GetValue<bool>());
                         Utility.DelayAction.Add(
-                            (int) (ObjectManager.Player.Distance(target) / Q.Speed * 1000 - 100 - Game.Ping / 2.0),
+                            (int) (ObjectManager.Player.Distance(target) / Q.Speed * 1000 - Game.Ping / 2.0)+250,
                             () =>
                             {
                                 if (R.IsReady() &&
-                                    !(DamageLib.getDmg(target, DamageLib.SpellType.R) * 0.6 > target.Health))
+                                    !(ObjectManager.Player.GetSpellDamage(target, SpellSlot.R) > target.Health))
                                 {
                                     R.Cast(target, false, true);
                                 }
                             });
                     }
-                    else if (W.IsReady())
+                    else if (W.IsReady() && useW)
                     {
-                        DoingCombo = Environment.TickCount;
+                        W.Cast(target);
+                        DoingCombo = Environment.TickCount + 250f;
                     }
 
-                    W.Cast(target, false, true); //stack only goes up after 650 secs
-
-                    Utility.DelayAction.Add(
-                        650 - 100 - Game.Ping / 2, () =>
-                        {
-                            if (R.IsReady() && !(DamageLib.getDmg(target, DamageLib.SpellType.R) * 0.6 > target.Health))
-                            {
-                                R.Cast(target, false, true);
-                            }
-
-                            DoingCombo = Environment.TickCount;
-                        });
 
                     break;
                 case 4:
-                    Console.WriteLine("[" + Game.Time + "]Case 4");
                     if (ObjectManager.Player.SummonerSpellbook.CanUseSpell(FlashSlot) == SpellState.Ready && R.IsReady() &&
                         target == null)
                     {
@@ -298,35 +301,40 @@ namespace Annie
                         Items.UseItem(3128, flashRtarget);
                         R.Cast(flashRtarget, false, true);
 
-                        if (W.IsReady())
+                        if (W.IsReady() && useW)
                         {
                             W.Cast(flashRtarget, false, true);
                         }
+                        else if (Q.IsReady() && useQ)
+                        {
+                            Q.Cast(flashRtarget, Config.Item("PCast").GetValue<bool>());
+                        }
                     }
-                    else if (R.IsReady() && !(DamageLib.getDmg(target, DamageLib.SpellType.R) * 0.6 > target.Health))
+                    else if (target != null)
                     {
-                        R.Cast(target, false, true);
-                    }
+                        if (R.IsReady() && useR && !(ObjectManager.Player.GetSpellDamage(target, SpellSlot.R) * 0.6 > target.Health))
+                        {
+                            R.Cast(target, false, true);
+                        }
 
-                    if (W.IsReady())
-                    {
-                        W.Cast(target, false, true);
-                    }
+                        if (W.IsReady() && useW)
+                        {
+                            W.Cast(target, false, true);
+                        }
 
-                    if (Q.IsReady())
-                    {
-                        Q.Cast(target, false, true);
+                        if (Q.IsReady() && useQ)
+                        {
+                            Q.Cast(target, Config.Item("PCast").GetValue<bool>());
+                        }
                     }
-
                     break;
                 default:
-                    Console.WriteLine("[" + Game.Time + "]Case default");
-                    if (Q.IsReady())
+                    if (Q.IsReady() && useQ)
                     {
-                        Q.CastOnUnit(target, Config.Item("PCast").GetValue<bool>());
+                        Q.Cast(target, Config.Item("PCast").GetValue<bool>());
                     }
 
-                    if (W.IsReady())
+                    if (W.IsReady() && useW)
                     {
                         W.Cast(target, false, true);
                     }
@@ -334,10 +342,10 @@ namespace Annie
                     break;
             }
 
-            if (IgniteSlot != SpellSlot.Unknown &&
+            if (IgniteSlot != SpellSlot.Unknown && target != null &&
                 ObjectManager.Player.SummonerSpellbook.CanUseSpell(IgniteSlot) == SpellState.Ready &&
                 ObjectManager.Player.Distance(target) < 600 &&
-                DamageLib.getDmg(target, DamageLib.SpellType.IGNITE) > target.Health)
+                ObjectManager.Player.GetSpellDamage(target, IgniteSlot) > target.Health)
             {
                 ObjectManager.Player.SummonerSpellbook.CastSpell(IgniteSlot, target);
             }
