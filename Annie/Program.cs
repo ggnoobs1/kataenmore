@@ -379,7 +379,7 @@ namespace Annie
                     minions.OrderByDescending(Minions => Minions.MaxHealth)
                         .Where(minion => minion.IsValidTarget(Q.Range))
                 let predictedHealth = Q.GetHealthPrediction(minion)
-                where predictedHealth < ObjectManager.Player.GetSpellDamage(minion, SpellSlot.Q) * 0.9 && predictedHealth > 0
+                where predictedHealth < ObjectManager.Player.GetSpellDamage(minion, SpellSlot.Q) && predictedHealth > 0
                 select minion)
             {
                 Q.CastOnUnit(minion, Config.Item("PCast").GetValue<bool>());
