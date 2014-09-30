@@ -67,7 +67,7 @@ namespace Cho_Gath
 
             Drawing.OnDraw    += Drawing_OnDraw;
             Game.OnGameUpdate += Game_OnGameUpdate;
-            Interrupter.OnPosibleToInterrupt += Interrupter_OnPosibleToInterrupt;
+            Interrupter.OnPossibleToInterrupt += Interrupter_OnPosibleToInterrupt;
         }
 
         private static void Drawing_OnDraw(EventArgs args)
@@ -113,15 +113,15 @@ namespace Cho_Gath
             }
 
             if (R.IsReady() && autoStack)
-            foreach (var minion in allMinions.Where(minion => minion.IsValidTarget(R.Range) && DamageLib.getDmg(minion, DamageLib.SpellType.R) > minion.Health).Where(minion => count < 6))
+            foreach (var minion in allMinions.Where(minion => minion.IsValidTarget(R.Range) && (ObjectManager.Player.GetSpellDamage(minion, SpellSlot.R) > minion.Health)).Where(minion => count < 6))
                 R.CastOnUnit(minion);
 
             var autoQ1 = Config.Item("AutoQ1").GetValue<bool>();
             var autoQ2 = Config.Item("AutoQ2").GetValue<bool>();
 
             foreach (var champion in from champion in ObjectManager.Get<Obj_AI_Hero>() 
-            where champion.IsValidTarget(Q.Range) let QPrediction = Q.GetPrediction(champion) 
-            where (QPrediction.Hitchance == HitChance.Immobile && autoQ1) ||(QPrediction.Hitchance == HitChance.Dashing && autoQ2) select champion)
+            where champion.IsValidTarget(Q.Range) let qPrediction = Q.GetPrediction(champion) 
+            where (qPrediction.Hitchance == HitChance.Immobile && autoQ1) ||(qPrediction.Hitchance == HitChance.Dashing && autoQ2) select champion)
                 Q.Cast(champion, true, true);
         }
 
@@ -140,7 +140,7 @@ namespace Cho_Gath
             if (Q.IsReady() && useQ && ObjectManager.Player.Distance(target) <= Q.Range)
                 Q.Cast(target, false, true);
 
-            if (R.IsReady() && useR && DamageLib.getDmg(target, DamageLib.SpellType.R) > target.Health)
+            if (R.IsReady() && useR && ObjectManager.Player.GetSpellDamage(target, SpellSlot.R) > target.Health)
                 R.CastOnUnit(target, true);
         }
 
@@ -149,15 +149,15 @@ namespace Cho_Gath
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(Q.Range)))
             {
                 if (R.IsReady() && hero.Distance(ObjectManager.Player) <= R.Range &&
-                    DamageLib.getDmg(hero, DamageLib.SpellType.R) > hero.Health)
+                    ObjectManager.Player.GetSpellDamage(hero, SpellSlot.R) > hero.Health)
                     R.CastOnUnit(hero, true);
 
                 if (W.IsReady() && hero.Distance(ObjectManager.Player) <= W.Range &&
-                    DamageLib.getDmg(hero, DamageLib.SpellType.W) > hero.Health)
+                    ObjectManager.Player.GetSpellDamage(hero, SpellSlot.W) > hero.Health)
                     W.CastIfHitchanceEquals(hero, HitChance.High, true);
 
                 if (Q.IsReady() && hero.Distance(ObjectManager.Player) <= Q.Range &&
-                    DamageLib.getDmg(hero, DamageLib.SpellType.Q) > hero.Health)
+                    ObjectManager.Player.GetSpellDamage(hero, SpellSlot.Q) > hero.Health)
                     Q.CastIfHitchanceEquals(hero, HitChance.High, true);
             }
         }
