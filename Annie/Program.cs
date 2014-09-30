@@ -62,7 +62,7 @@ namespace Annie
 
         private static void Main(string[] args)
         {
-            CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
+            CustomEvents.Game.OnGameLoad += Game_OnGameLoad;    
         }
 
         private static void Game_OnGameLoad(EventArgs args)
@@ -104,6 +104,7 @@ namespace Annie
             Config.SubMenu("combo").AddItem(new MenuItem("qCombo", "Use Q")).SetValue(true);
             Config.SubMenu("combo").AddItem(new MenuItem("wCombo", "Use W")).SetValue(true);
             Config.SubMenu("combo").AddItem(new MenuItem("rCombo", "Use R")).SetValue(true);
+            Config.SubMenu("combo").AddItem(new MenuItem("itemsCombo", "Use Items")).SetValue(true);
             Config.SubMenu("combo")
                 .AddItem(new MenuItem("flashCombo", "Targets needed to Flash -> R(stun)"))
                 .SetValue(new Slider(4, 5, 1));
@@ -247,18 +248,19 @@ namespace Annie
             {
                 return;
             }
-
-            if (Config.Item("comboItems").GetValue<bool>() && target != null)
+            if (Config.Item("itemsCombo").GetValue<bool>() && target != null)
             {
                 Items.UseItem(3128, target);
             }
+
+            
             var useQ = Config.Item("qCombo").GetValue<bool>();
             var useW = Config.Item("wCombo").GetValue<bool>();
             var useR = Config.Item("rCombo").GetValue<bool>();
             switch (StunCount)
             {
                 case 3:
-                    if (target==null)
+                    if (target == null)
                     {
                         return;
                     }
@@ -379,7 +381,7 @@ namespace Annie
                     minions.OrderByDescending(Minions => Minions.MaxHealth)
                         .Where(minion => minion.IsValidTarget(Q.Range))
                 let predictedHealth = Q.GetHealthPrediction(minion)
-                where predictedHealth < ObjectManager.Player.GetSpellDamage(minion, SpellSlot.Q) && predictedHealth > 0
+                where predictedHealth < ObjectManager.Player.GetSpellDamage(minion, SpellSlot.Q) * 0.85 && predictedHealth > 0
                 select minion)
             {
                 Q.CastOnUnit(minion, Config.Item("PCast").GetValue<bool>());
