@@ -28,6 +28,9 @@ namespace Activator
 
             //Auto shield
             AutoShield.AddToMenu(Config.Menu);
+            
+            //Auto Potion
+            AutoPotion.AddToMenu(Config.Menu);
            
             Config.Menu.AddToMainMenu();
         }
