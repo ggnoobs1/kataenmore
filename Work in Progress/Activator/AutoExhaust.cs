@@ -43,7 +43,7 @@ namespace Activator
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
         }
 
-        private static void Game_OnGameUpdate(System.EventArgs args)
+        private static void Game_OnGameUpdate(EventArgs args)
         {
             ActiveSpells.RemoveAll(entry => Environment.TickCount > entry.TickCount + 1500);
 
