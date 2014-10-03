@@ -33,10 +33,347 @@ namespace Activator
 
         static AutoExhaust()
         {
+            #region Annie
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Annie",
+                    IsCC = true,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "InfernalGuardian"
+                });
+
+            #endregion
+            #region Brand
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Brand",
+                    IsCC = false,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "BrandWildfire"
+                });
+
+            #endregion
+            #region Fiddlesticks
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Fiddlesticks",
+                    IsCC = false,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "Crowstorm"
+                });
+
+            #endregion
+            #region Fiora
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Fiora",
+                    IsCC = false,
+                    IsMelee = true,
+                    Slot = SpellSlot.R,
+                    SpellName = "FioraDance"
+                });
+            
+            #endregion
+            #region Graves
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Graves",
+                    IsCC = false,
+                    IsMelee = true,
+                    Slot = SpellSlot.R,
+                    SpellName = "GravesChargeShot"
+                });
+
+            #endregion
+            #region Katarina
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Katarina",
+                    IsCC = false,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "KatarinaR"
+                });
+
+            #endregion
+            #region Kennen
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Kennen",
+                    IsCC = false,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "KennenShurikenStorm"
+                });
+
+            #endregion
+            #region Lissandra
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Lissandra",
+                    IsCC = false,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "LissandraR"
+                });
+
+            #endregion
+            #region Lux
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Lux",
+                    IsCC = false,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "LuxMaliceCannon"
+                });
+
+            #endregion
+            #region Malzahar
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Malzahar",
+                    IsCC = true,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "AlZaharNetherGrasp"
+                });
+
+            #endregion
+            #region MissFortune
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "MissFortune",
+                    IsCC = false,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "MissFortuneBulletTime"
+                });
+
+            #endregion
+            #region Morgana
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Morgana",
+                    IsCC = true,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "SoulShackles"
+                }); //NEEDS DELAY
+
+            #endregion
+            #region Nunu
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Nunu", 
+                    IsCC = true,
+                    IsMelee = true,
+                    Slot = SpellSlot.R, 
+                    SpellName = "AbsoluteZero"
+                });
+
+            #endregion
+            #region Orianna
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Orianna",
+                    IsCC = true,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "OrianaDetonateCommand"
+                });
+
+            #endregion
+            #region Riven
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Riven",
+                    IsCC = false,
+                    IsMelee = true,
+                    Slot = SpellSlot.R,
+                    SpellName = "RivenFengShuiEngine"
+                });
+
+            #endregion
+            #region Syndra
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Syndra",
+                    IsCC = false,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "SyndraR"
+                });
+
+            #endregion
+            #region Tristana
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Tristana",
+                    IsCC = false,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "BusterShot"
+                });
+
+            #endregion
+            #region Twitch
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Twitch",
+                    IsCC = false,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "FullAutomatic"
+                });
+
+            #endregion
+            #region Veigar
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Veigar",
+                    IsCC = false,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "VeigarPrimordialBurst"
+                });
+
+            #endregion
+            #region Velkoz
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Velkoz",
+                    IsCC = false,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "VelkozR"
+                });
+
+            #endregion
+            #region Vi
+
+            Spells.Add(
+                new SpellToExhaust { ChampionName = "Vi", IsCC = true, Slot = SpellSlot.R, SpellName = "ViR" });
+
+            #endregion
+            #region Viktor
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Viktor",
+                    IsCC = false,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "ViktorChaosStorm"
+                });
+
+            #endregion
+            #region MonkeyKing
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "MonkeyKing",
+                    IsCC = false,
+                    IsMelee = true,
+                    Slot = SpellSlot.R,
+                    SpellName = "MonkeyKingSpinToWin"
+                });
+
+            #endregion
+            #region Xerath
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Xerath",
+                    IsCC = false,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "XerathLocusOfPower2"
+                });
+
+            #endregion
+            #region Yasuo
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Yasuo",
+                    IsCC = false,
+                    IsMelee = true,
+                    Slot = SpellSlot.R,
+                    SpellName = "YasuoRKnockUpComboW"
+                });
+            #endregion
             #region Zed
 
             Spells.Add(
-                new SpellToExhaust { ChampionName = "Zed", IsCC = false, IsMelee = false, Slot = SpellSlot.R, SpellName = "ZedUlt" });
+                new SpellToExhaust
+                {
+                    ChampionName = "Zed",
+                    IsCC = false,
+                    IsMelee = true,
+                    Slot = SpellSlot.R,
+                    SpellName = "ZedUlt"
+                });
+
+            #endregion
+            #region Zyra
+
+            Spells.Add(
+                new SpellToExhaust
+                {
+                    ChampionName = "Zyra",
+                    IsCC = true,
+                    IsMelee = false,
+                    Slot = SpellSlot.R,
+                    SpellName = "ZyraBrambleZone"
+                });
 
             #endregion
 
