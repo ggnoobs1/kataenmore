@@ -10,6 +10,7 @@ namespace Activator
 {
     class AutoPotion
     {
+        readonly static Obj_AI_Hero Player = ObjectManager.Player;
         private enum PotionType {
             Health,
             Mana
@@ -24,37 +25,43 @@ namespace Activator
         {
             var potionsMenu = new Menu("Auto Potion", "AutoPotion");
 
+            potionsMenu.AddItem(new MenuItem("Enabled", "Enabled").SetValue(true));
             potionsMenu.AddItem(new MenuItem("HpPct", "Health %").SetValue(new Slider(40)));
             potionsMenu.AddItem(new MenuItem("MnPct", "Mana %").SetValue(new Slider(20)));
 
             menu.AddSubMenu(potionsMenu);
         }
 
+        private static bool Disallowed()
+        {
+            return (Player.HasBuff("Recall") || Utility.InFountain()); //Add more
+        }
+
         private static void OnGameUpdate(EventArgs args)
         {
-            var Player = ObjectManager.Player;
+            if (!Config.Menu.Item("Enabled").GetValue<bool>())
+                return;
 
             // Default Potions
-            float _HpPct = Config.Menu.Item("HpPct").GetValue<Slider>().Value / 100f;
-            float _MnPct = Config.Menu.Item("MnPct").GetValue<Slider>().Value / 100f;
+            var hpPct = Config.Menu.Item("HpPct").GetValue<Slider>().Value / 100f;
+            var mnPct = Config.Menu.Item("MnPct").GetValue<Slider>().Value / 100f;
 
             // Flask
             if (Player.HasBuff("ItemCrystalFlask"))
                 return;
 
             // Health Potion
-            if (Player.Health / Player.MaxHealth <= _HpPct && !Player.HasBuff("Health Potion"))
+            if (Player.Health / Player.MaxHealth <= hpPct && !Player.HasBuff("Health Potion") && !Disallowed())
                 CastPotion(PotionType.Health);
 
             // Mana Potion
-            if (Player.Mana / Player.MaxMana <= _MnPct && !Player.HasBuff("Mana Potion"))
+            if (Player.Mana / Player.MaxMana <= mnPct && !Player.HasBuff("Mana Potion") && !Disallowed())
                 CastPotion(PotionType.Mana);
-
         }
 
         private static void CastPotion(PotionType type)
         {
-            ObjectManager.Player.InventoryItems.Where(item => item.Id == (type == PotionType.Health ? (ItemId)2003 : (ItemId)2004) || (item.Id == (ItemId)2041 && item.Charges > 0)).First().UseItem();
+            Player.InventoryItems.First(item => item.Id == (type == PotionType.Health ? (ItemId)2003 : (ItemId)2004) || (item.Id == (ItemId)2041 && item.Charges > 0)).UseItem();
         }
     }
 }
