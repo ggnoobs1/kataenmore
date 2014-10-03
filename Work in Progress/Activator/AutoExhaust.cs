@@ -14,6 +14,7 @@ namespace Activator
     {
         public string ChampionName;
         public bool IsCC;
+        public bool IsMelee;
         public SpellSlot Slot;
         public string SpellName;
     }
@@ -35,7 +36,7 @@ namespace Activator
             #region Zed
 
             Spells.Add(
-                new SpellToExhaust { ChampionName = "Zed", IsCC = false, Slot = SpellSlot.R, SpellName = "ZedUlt" });
+                new SpellToExhaust { ChampionName = "Zed", IsCC = false, IsMelee = false, Slot = SpellSlot.R, SpellName = "ZedUlt" });
 
             #endregion
 
