@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -61,7 +58,7 @@ namespace Activator
 
         private static void CastPotion(PotionType type)
         {
-            Player.InventoryItems.First(item => item.Id == (type == PotionType.Health ? (ItemId)2003 : (ItemId)2004) || (item.Id == (ItemId)2041 && item.Charges > 0)).UseItem();
+            Player.InventoryItems.First(item => item.Id == (type == PotionType.Health ? (ItemId)2003 : (ItemId)2004) || (item.Id == (ItemId)2010) || (item.Id == (ItemId)2041 && item.Charges > 0)).UseItem();
         }
     }
 }
