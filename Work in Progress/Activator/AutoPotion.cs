@@ -22,7 +22,7 @@ namespace Activator
         {
             var potionsMenu = new Menu("Auto Potion", "AutoPotion");
 
-            potionsMenu.AddItem(new MenuItem("Enabled", "Enabled").SetValue(true));
+            potionsMenu.AddItem(new MenuItem("EnableAutoPotion", "Enabled").SetValue(true));
             potionsMenu.AddItem(new MenuItem("HpPct", "Health %").SetValue(new Slider(40)));
             potionsMenu.AddItem(new MenuItem("MnPct", "Mana %").SetValue(new Slider(20)));
 
@@ -36,7 +36,7 @@ namespace Activator
 
         private static void OnGameUpdate(EventArgs args)
         {
-            if (!Config.Menu.Item("Enabled").GetValue<bool>())
+            if (!Config.Menu.Item("EnableAutoPotion").GetValue<bool>())
                 return;
 
             // Default Potions

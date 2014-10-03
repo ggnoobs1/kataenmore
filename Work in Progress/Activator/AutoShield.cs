@@ -18,7 +18,7 @@ namespace Activator
 
         public static void AddToMenu(Menu menu)
         {
-            var shieldsMenu = new Menu("AutoShield", "AutoShield");
+            var shieldsMenu = new Menu("Auto Shield", "AutoShield");
            
             //General settings.
             if(Shields.Any(s => s.CanTargetAllies))
@@ -41,7 +41,7 @@ namespace Activator
             {
                 var subMenu = new Menu(shield.MenuName, shield.MenuName);
                 subMenu.AddItem(new MenuItem("as" + shield.MenuName + "Priority", "Priority").SetValue(new Slider(shield.Priority, 0, 5)));
-                subMenu.AddItem(new MenuItem("as" + shield.MenuName + "HealthPercent", "HealthPercent").SetValue(new Slider(shield.HealthPercent, 0, 100)));
+                subMenu.AddItem(new MenuItem("as" + shield.MenuName + "HealthPercent", "HealthPercent").SetValue(new Slider(shield.HealthPercent)));
                 subMenu.AddItem(new MenuItem("as" + shield.MenuName + "Enabled", "Enabled").SetValue(true));
                 shieldsMenu.AddSubMenu(subMenu);
             }

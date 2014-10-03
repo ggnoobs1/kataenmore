@@ -23,11 +23,14 @@ namespace Activator
         {
             Config.Menu = new Menu("Activator", "Activator", true);
 
-            //Auto shield
+            //Auto Shield
             AutoShield.AddToMenu(Config.Menu);
             
             //Auto Potion
             AutoPotion.AddToMenu(Config.Menu);
+
+            //Auto smite
+            AutoSmite.AddToMenu(Config.Menu);
            
             Config.Menu.AddToMainMenu();
         }
