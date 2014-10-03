@@ -29,7 +29,7 @@ namespace Activator
             //Auto Potion
             AutoPotion.AddToMenu(Config.Menu);
 
-            //Auto smite
+            //Auto Smite
             AutoSmite.AddToMenu(Config.Menu);
            
             Config.Menu.AddToMainMenu();
