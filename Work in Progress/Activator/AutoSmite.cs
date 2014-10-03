@@ -2,6 +2,7 @@
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SharpDX;
 using Color = System.Drawing.Color;
 
 namespace Activator
@@ -23,6 +24,7 @@ namespace Activator
             var smiteMenu = new Menu("Auto Smite", "AutoSmite");
 
             smiteMenu.AddItem(new MenuItem("AutoSmiteEnabled", "Enabled").SetValue(true));
+            smiteMenu.AddItem(new MenuItem("EnableSmallCamps", "Smite small Camps").SetValue(true));
             smiteMenu.AddItem(new MenuItem("AutoSmiteDrawing", "Enable Drawing").SetValue(true));
 
             menu.AddSubMenu(smiteMenu);
@@ -34,10 +36,20 @@ namespace Activator
             "Worm", "Dragon", "LizardElder", "AncientGolem", "TT_Spiderboss", "TTNGolem", "TTNWolf", "TTNWraith"
         };
 
+        private static readonly string[] SmallMinionNames =
+        {
+            //Andre add small camps
+        };
+
         private static Obj_AI_Base GetMinion()
         {
             var minionList = MinionManager.GetMinions(Player.ServerPosition, 500, MinionTypes.All, MinionTeam.Neutral);
-            return minionList.FirstOrDefault(minion => minion.IsValidTarget(500) && MinionNames.Any(name => minion.Name.StartsWith(name)));
+            var smallCamps = Config.Menu.Item("EnableSmallCamps").GetValue<bool>();
+            return smallCamps
+                ? minionList.FirstOrDefault(
+                    minion => minion.IsValidTarget(500) && MinionNames.Any(name => minion.Name.StartsWith(name)) && SmallMinionNames.Any(smallname => minion.Name.StartsWith(smallname)))
+                : minionList.FirstOrDefault(
+                    minion => minion.IsValidTarget(500) && MinionNames.Any(name => minion.Name.StartsWith(name)));
         }
 
         //Kill monster
