@@ -89,36 +89,39 @@ namespace Activator
         }
 
         //Cast Smite
-        private static void CastSmite(GameObject unit)
+        private static void CastSpell(GameObject unit, SpellSlot slot, bool isSummoner)
         {
-            if (SmiteSlot != SpellSlot.Unknown && Player.SummonerSpellbook.CanUseSpell(SmiteSlot) == SpellState.Ready)
+            if (!isSummoner)
             {
-                Player.SummonerSpellbook.CastSpell(SmiteSlot, unit);
+                Player.Spellbook.CastSpell(slot, unit);
+            }
+            else
+            {
+                Player.SummonerSpellbook.CastSpell(slot, unit);
             }
         }
 
         //Kill monster
         private static void KillMinion(Obj_AI_Base minion)
         {
-            if (SmiteSlot != SpellSlot.Unknown && Player.SummonerSpellbook.CanUseSpell(SmiteSlot) == SpellState.Ready &&
+            if (Player.SummonerSpellbook.CanUseSpell(SmiteSlot) == SpellState.Ready &&
                 Player.Spellbook.CanUseSpell(SpellSlot) == SpellState.Ready)
             {
                 if (Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) +
                     Player.GetSpellDamage(minion, SpellSlot) > minion.Health)
                 {
-                    CastSmite(minion);
-                    Player.Spellbook.CastSpell(SpellSlot, minion);
+                    CastSpell(minion, SmiteSlot, true);
+                    CastSpell(minion, SpellSlot, false);
                 }
             }
-            else if (SmiteSlot != SpellSlot.Unknown &&
-                     Player.SummonerSpellbook.CanUseSpell(SmiteSlot) == SpellState.Ready &&
+            else if (Player.SummonerSpellbook.CanUseSpell(SmiteSlot) == SpellState.Ready &&
                      Player.Spellbook.CanUseSpell(SpellSlot) == SpellState.Ready)
             {
                 if (Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) > minion.Health ||
                     Player.GetSpellDamage(minion, SpellSlot) > minion.Health)
                 {
-                    CastSmite(minion);
-                    Player.Spellbook.CastSpell(SpellSlot, minion);
+                    CastSpell(minion, SmiteSlot, true);
+                    CastSpell(minion, SpellSlot, false);
                 }
             }
         }
