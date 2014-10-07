@@ -22,6 +22,9 @@ namespace Activator
 
         static AutoSmite()
         {
+            if (SpellSlot == SpellSlot.Unknown && SmiteSlot == SpellSlot.Unknown)
+                return;
+
             Game.OnGameUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
 
