@@ -22,12 +22,6 @@ namespace Activator
 
         static AutoSmite()
         {
-            if (SpellSlot == SpellSlot.Unknown && SmiteSlot == SpellSlot.Unknown)
-                return;
-
-            Game.OnGameUpdate += Game_OnGameUpdate;
-            Drawing.OnDraw += Drawing_OnDraw;
-
             SmiteSlot = Player.GetSpellSlot("SummonerSmite");
 
             #region Olaf
@@ -53,6 +47,12 @@ namespace Activator
                     SpellSlot = spell.Slot;
                 }
             }
+
+            if (SpellSlot == SpellSlot.Unknown && SmiteSlot == SpellSlot.Unknown)
+                return;
+
+            Game.OnGameUpdate += Game_OnGameUpdate;
+            Drawing.OnDraw += Drawing_OnDraw;
         }
 
         public static void AddToMenu(Menu menu)
