@@ -17,8 +17,7 @@ namespace Activator
 
         public static List<SpellStruct> SpellList = new List<SpellStruct>();
         public static Obj_AI_Hero Player = ObjectManager.Player;
-        public static SpellSlot SmiteSlot;
-        public static SpellSlot SpellSlot;
+        public static SpellSlot SmiteSlot, SpellSlot;
 
         static AutoSmite()
         {
@@ -40,12 +39,9 @@ namespace Activator
             });
             #endregion
 
-            foreach (var spell in SpellList)
+            foreach (var spell in SpellList.Where(spell => spell.ChampionName == Player.ChampionName))
             {
-                if (spell.ChampionName == Player.ChampionName)
-                {
-                    SpellSlot = spell.Slot;
-                }
+                SpellSlot = spell.Slot;
             }
 
             if (SpellSlot == SpellSlot.Unknown && SmiteSlot == SpellSlot.Unknown)
@@ -114,7 +110,7 @@ namespace Activator
                     CastSpell(minion, SpellSlot, false);
                 }
             }
-            else if (Player.SummonerSpellbook.CanUseSpell(SmiteSlot) == SpellState.Ready &&
+            else if (Player.SummonerSpellbook.CanUseSpell(SmiteSlot) == SpellState.Ready ||
                      Player.Spellbook.CanUseSpell(SpellSlot) == SpellState.Ready)
             {
                 if (Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) > minion.Health ||
