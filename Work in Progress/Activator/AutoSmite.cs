@@ -1,22 +1,55 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using SharpDX;
 using Color = System.Drawing.Color;
 
 namespace Activator
 {
     public static class AutoSmite
     {
-        private static SpellSlot SmiteSlot;
-        private static Obj_AI_Hero Player = ObjectManager.Player;
+        public struct SpellStruct
+        {
+            public string ChampionName;
+            public SpellSlot Slot;
+        }
+
+        public static List<SpellStruct> SpellList = new List<SpellStruct>();
+        public static Obj_AI_Hero Player = ObjectManager.Player;
+        public static SpellSlot SmiteSlot;
+        public static SpellSlot SpellSlot;
+
         static AutoSmite()
         {
             Game.OnGameUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
 
             SmiteSlot = Player.GetSpellSlot("SummonerSmite");
+
+            #region Olaf
+            SpellList.Add(new SpellStruct
+            {
+                ChampionName = "Olaf",
+                Slot = SpellSlot.E
+            });
+            #endregion
+
+            #region Nunu
+            SpellList.Add(new SpellStruct
+            {
+                ChampionName = "Nunu",
+                Slot = SpellSlot.Q
+            });
+            #endregion
+
+            foreach (var spell in SpellList)
+            {
+                if (spell.ChampionName == Player.ChampionName)
+                {
+                    SpellSlot = spell.Slot;
+                }
+            }
         }
 
         public static void AddToMenu(Menu menu)
@@ -52,13 +85,38 @@ namespace Activator
                     minion => minion.IsValidTarget(500) && MinionNames.Any(name => minion.Name.StartsWith(name)));
         }
 
+        //Cast Smite
+        private static void CastSmite(GameObject unit)
+        {
+            if (SmiteSlot != SpellSlot.Unknown && Player.SummonerSpellbook.CanUseSpell(SmiteSlot) == SpellState.Ready)
+            {
+                Player.SummonerSpellbook.CastSpell(SmiteSlot, unit);
+            }
+        }
+
         //Kill monster
         private static void KillMinion(Obj_AI_Base minion)
         {
             if (SmiteSlot != SpellSlot.Unknown && Player.SummonerSpellbook.CanUseSpell(SmiteSlot) == SpellState.Ready &&
-                Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) > minion.Health)
+                Player.Spellbook.CanUseSpell(SpellSlot) == SpellState.Ready)
             {
-                Player.SummonerSpellbook.CastSpell(SmiteSlot, minion);
+                if (Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) +
+                    Player.GetSpellDamage(minion, SpellSlot) > minion.Health)
+                {
+                    CastSmite(minion);
+                    Player.Spellbook.CastSpell(SpellSlot, minion);
+                }
+            }
+            else if (SmiteSlot != SpellSlot.Unknown &&
+                     Player.SummonerSpellbook.CanUseSpell(SmiteSlot) == SpellState.Ready &&
+                     Player.Spellbook.CanUseSpell(SpellSlot) == SpellState.Ready)
+            {
+                if (Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) > minion.Health ||
+                    Player.GetSpellDamage(minion, SpellSlot) > minion.Health)
+                {
+                    CastSmite(minion);
+                    Player.Spellbook.CastSpell(SpellSlot, minion);
+                }
             }
         }
 
