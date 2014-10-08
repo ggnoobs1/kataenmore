@@ -64,9 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActiveSpell.cs" />
-    <Compile Include="AntiCC.cs" />
     <Compile Include="AutoExhaust.cs" />
-    <Compile Include="AutoHeal.cs" />
     <Compile Include="AutoPotion.cs" />
     <Compile Include="AutoShield.cs" />
     <Compile Include="AutoSmite.cs" />

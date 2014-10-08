@@ -72,7 +72,7 @@ namespace Activator
 
             var smiteMenu = new Menu("Auto Smite", "AutoSmite");
 
-            smiteMenu.AddItem(new MenuItem("AutoSmiteEnabled", "Enabled").SetValue(true)); 
+            smiteMenu.AddItem(new MenuItem("AutoSmiteEnabled", "Enabled").SetValue(true));
             smiteMenu.AddItem(new MenuItem("EnableSmallCamps", "Smite small Camps").SetValue(true));
             smiteMenu.AddItem(new MenuItem("AutoSmiteDrawing", "Enable Drawing").SetValue(true));
 
@@ -109,7 +109,7 @@ namespace Activator
             if (Player.SummonerSpellbook.CanUseSpell(SmiteSlot) == SpellState.Ready)
                 damage += Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite);
 
-            if (Player.Spellbook.CanUseSpell(SemiSmite) == SpellState.Ready)
+            if (Player.Spellbook.CanUseSpell(SemiSmite) == SpellState.Ready && Player.Distance(minion.ServerPosition) < SpellRange)
                 damage += Player.GetSpellDamage(minion, SemiSmite);
 
             return (float) damage;
