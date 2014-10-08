@@ -17,7 +17,7 @@ namespace Activator
 
         public static List<SpellStruct> SpellList = new List<SpellStruct>();
         public static Obj_AI_Hero Player = ObjectManager.Player;
-        public static SpellSlot SmiteSlot, SpellSlot;
+        public static SpellSlot SmiteSlot = SpellSlot.Unknown, SemiSmite = SpellSlot.Unknown;
 
         static AutoSmite()
         {
@@ -39,12 +39,20 @@ namespace Activator
             });
             #endregion
 
+            #region Chogath
+            SpellList.Add(new SpellStruct
+            {
+                ChampionName = "Chogath",
+                Slot = SpellSlot.R
+            });
+            #endregion
+
             foreach (var spell in SpellList.Where(spell => spell.ChampionName == Player.ChampionName))
             {
-                SpellSlot = spell.Slot;
+                SemiSmite = spell.ChampionName == Player.ChampionName ? spell.Slot : SpellSlot.Unknown;
             }
 
-            if (SpellSlot == SpellSlot.Unknown && SmiteSlot == SpellSlot.Unknown)
+            if (SemiSmite == SpellSlot.Unknown && SmiteSlot == SpellSlot.Unknown)
                 return;
 
             Game.OnGameUpdate += Game_OnGameUpdate;
@@ -53,9 +61,12 @@ namespace Activator
 
         public static void AddToMenu(Menu menu)
         {
+            if (SemiSmite == SpellSlot.Unknown && SmiteSlot == SpellSlot.Unknown)
+                return;
+
             var smiteMenu = new Menu("Auto Smite", "AutoSmite");
 
-            smiteMenu.AddItem(new MenuItem("AutoSmiteEnabled", "Enabled").SetValue(true));
+            smiteMenu.AddItem(new MenuItem("AutoSmiteEnabled", "Enabled").SetValue(true)); 
             smiteMenu.AddItem(new MenuItem("EnableSmallCamps", "Smite small Camps").SetValue(true));
             smiteMenu.AddItem(new MenuItem("AutoSmiteDrawing", "Enable Drawing").SetValue(true));
 
@@ -70,7 +81,7 @@ namespace Activator
 
         private static readonly string[] SmallMinionNames =
         {
-            //Andre add small camps
+            "Wraith", "Golem", "GreatWraith", "GiantWolf"
         };
 
         private static Obj_AI_Base GetMinion()
@@ -79,12 +90,26 @@ namespace Activator
             var smallCamps = Config.Menu.Item("EnableSmallCamps").GetValue<bool>();
             return smallCamps
                 ? minionList.FirstOrDefault(
-                    minion => minion.IsValidTarget(500) && MinionNames.Any(name => minion.Name.StartsWith(name)) && SmallMinionNames.Any(smallname => minion.Name.StartsWith(smallname)))
+                    minion => minion.IsValidTarget(500) && MinionNames.Any(name => minion.Name.StartsWith(name)) || SmallMinionNames.Any(smallname => minion.Name.StartsWith(smallname)))
                 : minionList.FirstOrDefault(
                     minion => minion.IsValidTarget(500) && MinionNames.Any(name => minion.Name.StartsWith(name)));
         }
 
-        //Cast Smite
+        //Calculate damage
+        private static float GetDamage(Obj_AI_Base minion)
+        {
+            var damage = 0d;
+
+            if (Player.SummonerSpellbook.CanUseSpell(SmiteSlot) == SpellState.Ready)
+                damage += Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite);
+
+            if (Player.Spellbook.CanUseSpell(SemiSmite) == SpellState.Ready)
+                damage += Player.GetSpellDamage(minion, SemiSmite);
+
+            return (float) damage;
+        }
+
+        //Cast spell
         private static void CastSpell(GameObject unit, SpellSlot slot, bool isSummoner)
         {
             if (!isSummoner)
@@ -100,25 +125,10 @@ namespace Activator
         //Kill monster
         private static void KillMinion(Obj_AI_Base minion)
         {
-            if (Player.SummonerSpellbook.CanUseSpell(SmiteSlot) == SpellState.Ready &&
-                Player.Spellbook.CanUseSpell(SpellSlot) == SpellState.Ready)
+            if (GetDamage(minion) > minion.Health)
             {
-                if (Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) +
-                    Player.GetSpellDamage(minion, SpellSlot) > minion.Health)
-                {
-                    CastSpell(minion, SmiteSlot, true);
-                    CastSpell(minion, SpellSlot, false);
-                }
-            }
-            else if (Player.SummonerSpellbook.CanUseSpell(SmiteSlot) == SpellState.Ready ||
-                     Player.Spellbook.CanUseSpell(SpellSlot) == SpellState.Ready)
-            {
-                if (Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) > minion.Health ||
-                    Player.GetSpellDamage(minion, SpellSlot) > minion.Health)
-                {
-                    CastSpell(minion, SmiteSlot, true);
-                    CastSpell(minion, SpellSlot, false);
-                }
+                CastSpell(minion, SemiSmite, false);
+                CastSpell(minion, SmiteSlot, true);
             }
         }
 
@@ -139,6 +149,7 @@ namespace Activator
             if (!Config.Menu.Item("AutoSmiteEnabled").GetValue<bool>() || !Config.Menu.Item("AutoSmiteDrawing").GetValue<bool>())
                 return;
 
+            
             Utility.DrawCircle(Player.Position, 700, Color.Coral);
         }
     }

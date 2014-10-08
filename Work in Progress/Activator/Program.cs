@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using LeagueSharp;
 using LeagueSharp.Common;
 
 /***************************
@@ -33,6 +34,9 @@ namespace Activator
             AutoSmite.AddToMenu(Config.Menu);
            
             Config.Menu.AddToMainMenu();
+
+            //PrintChat
+            Game.PrintChat("Activator loaded! Credits@Github");
         }
 
     }

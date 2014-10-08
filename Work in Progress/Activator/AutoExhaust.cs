@@ -296,7 +296,13 @@ namespace Activator
             #region Vi
 
             Spells.Add(
-                new SpellToExhaust { ChampionName = "Vi", IsCC = true, Slot = SpellSlot.R, SpellName = "ViR" });
+                new SpellToExhaust
+                {
+                    ChampionName = "Vi",
+                    IsCC = true,
+                    Slot = SpellSlot.R,
+                    SpellName = "ViR"
+                });
 
             #endregion
             #region Viktor
