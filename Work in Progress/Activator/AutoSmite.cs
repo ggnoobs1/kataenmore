@@ -13,11 +13,13 @@ namespace Activator
         {
             public string ChampionName;
             public SpellSlot Slot;
+            public float Range;
         }
 
         public static List<SpellStruct> SpellList = new List<SpellStruct>();
         public static Obj_AI_Hero Player = ObjectManager.Player;
         public static SpellSlot SmiteSlot = SpellSlot.Unknown, SemiSmite = SpellSlot.Unknown;
+        public static float SpellRange;
 
         static AutoSmite()
         {
@@ -27,7 +29,8 @@ namespace Activator
             SpellList.Add(new SpellStruct
             {
                 ChampionName = "Olaf",
-                Slot = SpellSlot.E
+                Slot = SpellSlot.E,
+                Range = 325
             });
             #endregion
 
@@ -35,7 +38,8 @@ namespace Activator
             SpellList.Add(new SpellStruct
             {
                 ChampionName = "Nunu",
-                Slot = SpellSlot.Q
+                Slot = SpellSlot.Q,
+                Range = 125
             });
             #endregion
 
@@ -43,15 +47,17 @@ namespace Activator
             SpellList.Add(new SpellStruct
             {
                 ChampionName = "Chogath",
-                Slot = SpellSlot.R
+                Slot = SpellSlot.R,
+                Range = 175
             });
             #endregion
 
             foreach (var spell in SpellList.Where(spell => spell.ChampionName == Player.ChampionName))
             {
                 SemiSmite = spell.ChampionName == Player.ChampionName ? spell.Slot : SpellSlot.Unknown;
+                SpellRange = spell.Range;
             }
-
+                
             if (SemiSmite == SpellSlot.Unknown && SmiteSlot == SpellSlot.Unknown)
                 return;
 
@@ -86,13 +92,13 @@ namespace Activator
 
         private static Obj_AI_Base GetMinion()
         {
-            var minionList = MinionManager.GetMinions(Player.ServerPosition, 500, MinionTypes.All, MinionTeam.Neutral);
+            var minionList = MinionManager.GetMinions(Player.ServerPosition, 760, MinionTypes.All, MinionTeam.Neutral);
             var smallCamps = Config.Menu.Item("EnableSmallCamps").GetValue<bool>();
             return smallCamps
                 ? minionList.FirstOrDefault(
-                    minion => minion.IsValidTarget(500) && MinionNames.Any(name => minion.Name.StartsWith(name)) || SmallMinionNames.Any(smallname => minion.Name.StartsWith(smallname)))
+                    minion => minion.IsValidTarget(760) && MinionNames.Any(name => minion.Name.StartsWith(name)) || SmallMinionNames.Any(smallname => minion.Name.StartsWith(smallname)))
                 : minionList.FirstOrDefault(
-                    minion => minion.IsValidTarget(500) && MinionNames.Any(name => minion.Name.StartsWith(name)));
+                    minion => minion.IsValidTarget(760) && MinionNames.Any(name => minion.Name.StartsWith(name)));
         }
 
         //Calculate damage
@@ -127,7 +133,10 @@ namespace Activator
         {
             if (GetDamage(minion) > minion.Health)
             {
-                CastSpell(minion, SemiSmite, false);
+                if (Player.Distance(minion) < SpellRange)
+                {
+                    CastSpell(minion, SemiSmite, false);
+                }
                 CastSpell(minion, SmiteSlot, true);
             }
         }
@@ -148,9 +157,8 @@ namespace Activator
         {
             if (!Config.Menu.Item("AutoSmiteEnabled").GetValue<bool>() || !Config.Menu.Item("AutoSmiteDrawing").GetValue<bool>())
                 return;
-
-            
-            Utility.DrawCircle(Player.Position, 700, Color.Coral);
+       
+            Utility.DrawCircle(Player.Position, 760, Color.Coral);
         }
     }
 }
