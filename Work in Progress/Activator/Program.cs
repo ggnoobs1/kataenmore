@@ -23,6 +23,9 @@ namespace Activator
 
             //Auto Smite
             AutoSmite.AddToMenu(Config.Menu);
+
+            //Auto Exhaust
+            AutoExhaust.AddToMenu(Config.Menu);
            
             Config.Menu.AddToMainMenu();
 

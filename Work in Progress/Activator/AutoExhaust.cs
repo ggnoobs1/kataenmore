@@ -30,9 +30,15 @@ namespace Activator
     {
         public static List<SpellToExhaust> Spells = new List<SpellToExhaust>();
         public static List<ActiveSpellToExhaust> ActiveSpells = new List<ActiveSpellToExhaust>();
+        public static SpellSlot ExhaustSlot = SpellSlot.Unknown;
 
         static AutoExhaust()
         {
+            
+            ExhaustSlot = ObjectManager.Player.GetSpellSlot("SummonerExhaust");
+            if (ExhaustSlot == SpellSlot.Unknown)
+                return;
+                       
             #region Annie
 
             Spells.Add(
@@ -387,10 +393,34 @@ namespace Activator
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
         }
 
+        public static void AddToMenu(Menu menu)
+        {          
+            if (ExhaustSlot == SpellSlot.Unknown)
+                return;
+
+            var exhaustMenu = new Menu("Auto Exhaust", "AutoExhaust");
+
+            exhaustMenu.AddItem(new MenuItem("EnableAutoExhaust", "Enabled").SetValue(true));
+            exhaustMenu.AddSubMenu(new Menu("Spells", "Spells"));
+
+            foreach (var spell in from hero in ObjectManager.Get<Obj_AI_Hero>()
+                where hero.Team != ObjectManager.Player.Team
+                from spell in Spells
+                where spell.ChampionName == hero.ChampionName
+                select spell)
+            {
+                exhaustMenu.SubMenu("Spells")
+                    .AddItem(new MenuItem("Enabled" + spell.SpellName, spell.ChampionName + "  " + spell.Slot).SetValue(true));
+            }
+
+            menu.AddSubMenu(exhaustMenu);
+        }
+
         private static void Game_OnGameUpdate(EventArgs args)
         {
             ActiveSpells.RemoveAll(entry => Environment.TickCount > entry.TickCount + 1500);
 
+            //TO DO: CHECK IF THE SPELL IS DISABLED OR NOT
             foreach (var spell in
                 ActiveSpells.Where(
                     spell =>
@@ -419,12 +449,10 @@ namespace Activator
 
         private static void CastExhaust(GameObject unit)
         {
-            var exhaustSlot = ObjectManager.Player.GetSpellSlot("SummonerExhaust");
-
-            if (exhaustSlot != SpellSlot.Unknown &&
-                ObjectManager.Player.SummonerSpellbook.CanUseSpell(exhaustSlot) == SpellState.Ready)
+            if (ExhaustSlot != SpellSlot.Unknown &&
+                ObjectManager.Player.SummonerSpellbook.CanUseSpell(ExhaustSlot) == SpellState.Ready)
             {
-                ObjectManager.Player.SummonerSpellbook.CastSpell(exhaustSlot, unit);
+                ObjectManager.Player.SummonerSpellbook.CastSpell(ExhaustSlot, unit);
             }
         }
 
