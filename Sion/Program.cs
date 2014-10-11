@@ -29,16 +29,6 @@ namespace Sion
         {
             if (ObjectManager.Player.BaseSkinName != "Sion") return;
 
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
-            {
-                foreach (var spell in hero.Spellbook.Spells)
-                {
-                    Console.WriteLine(
-                        spell.SData.Name + " w:" + spell.SData.LineWidth + " s:" + spell.SData.MissileSpeed + " r: " +
-                        spell.SData.CastRange[0]);
-                }
-            }
-
             //Spells
             Q = new Spell(SpellSlot.Q, 1050);
             Q.SetSkillshot(0.6f, 100f, float.MaxValue, false, SkillshotType.SkillshotLine);
