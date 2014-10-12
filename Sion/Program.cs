@@ -69,8 +69,10 @@ namespace Sion
             Game.PrintChat("Sion Loaded!");
             Game.OnGameUpdate += Game_OnGameUpdate;
             Game.OnGameProcessPacket += Game_OnGameProcessPacket;
-            Drawing.OnDraw += Drawing_OnDraw;
+            //Drawing.OnDraw += Drawing_OnDraw;
             Obj_AI_Hero.OnProcessSpellCast += ObjAiHeroOnOnProcessSpellCast;
+
+
         }
 
 
@@ -80,6 +82,11 @@ namespace Sion
             if (sender.IsMe && args.SData.Name == "SionQ")
             {
                 QCastPos = args.End.To2D();
+            }
+
+            if (args.SData.Name == "SionR")
+            {
+              //  ObjectManager.Player.Spellbook.CastSpell(SpellSlot.R, ObjectManager.Player);
             }
         }
 
