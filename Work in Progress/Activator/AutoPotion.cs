@@ -8,9 +8,12 @@ namespace Activator
     class AutoPotion
     {
         readonly static Obj_AI_Hero Player = ObjectManager.Player;
+        
         private enum PotionType {
-            Health,
-            Mana
+            Health = 2003,
+            Mana = 2004,
+            Biscuit = 2009,
+            CrystalFlask = 2041,
         }
 
         static AutoPotion()

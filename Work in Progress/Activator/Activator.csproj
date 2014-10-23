@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActiveSpell.cs" />
+    <Compile Include="AutoClarity.cs" />
     <Compile Include="AutoExhaust.cs" />
     <Compile Include="AutoIgnite.cs" />
     <Compile Include="AutoPotion.cs" />
