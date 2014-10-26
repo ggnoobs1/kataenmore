@@ -259,7 +259,7 @@ namespace Orianna
 
         private static void CastSpellE(Obj_AI_Base target, bool allValid = false)
         {
-            if ((!target.IsValidTarget() && !allValid) || !E.IsReady(Game.Ping / 2 + 100))
+            if ((!target.IsValidTarget() && !allValid) || !E.IsReady())
             {
                 return;
             }
