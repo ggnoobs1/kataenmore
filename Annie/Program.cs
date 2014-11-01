@@ -206,9 +206,9 @@ namespace Annie
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    Orbwalker.SetAttacks(false);
+                    Orbwalker.SetAttack(false);
                     Combo(target, flashRtarget);
-                    Orbwalker.SetAttacks(true);
+                    Orbwalker.SetAttack(true);
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
                     if (Config.Item("suppMode").GetValue<bool>())
