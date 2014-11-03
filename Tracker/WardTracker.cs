@@ -186,7 +186,7 @@ namespace Tracker
 
                 _timerText.TextUpdate =
                     () =>
-                        (IsFromMissile ? "?? " : "") + Utility.FormatTime((EndT - Environment.TickCount) / 1000f) +
+                        (IsFromMissile ? "?? " : "") + Utils.FormatTime((EndT - Environment.TickCount) / 1000f) +
                         (IsFromMissile ? " ??" : "");
                 _timerText.Add(2);
             }
