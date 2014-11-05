@@ -26,7 +26,7 @@ namespace Tracker
         public static int X = 0;
         public static int Y = 0;
 
-        public static SpellSlot[] SummonerSpellSlots = { SpellSlot.Q, SpellSlot.W };
+        public static SpellSlot[] SummonerSpellSlots = { SpellSlot.Summoner1, SpellSlot.Summoner2 };
         public static SpellSlot[] SpellSlots = { SpellSlot.Q, SpellSlot.W, SpellSlot.E, SpellSlot.R };
 
         public static Menu Config;
@@ -40,6 +40,9 @@ namespace Tracker
 
         static HbTracker()
         {
+            if(!Game.Version.Contains('4.19'))
+                SummonerSpellSlots = { SpellSlot.Q, SpellSlot.W };
+                
             try
             {
                 foreach (var sName in SummonersNames)
