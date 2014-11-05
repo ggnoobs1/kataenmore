@@ -40,7 +40,7 @@ namespace Tracker
 
         static HbTracker()
         {
-            if(!Game.Version.Contains('4.19'))
+            if(!Game.Version.Contains("4.19"))
                 SummonerSpellSlots = new SpellSlot[] { SpellSlot.Q, SpellSlot.W };
                 
             try
