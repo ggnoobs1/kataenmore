@@ -1,6 +1,5 @@
 ﻿#region
 
-using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using LeagueSharp;
@@ -56,13 +55,8 @@ namespace PacketAnalyzer
 
         private static void AddTo(this DataGridView view, GamePacket p)
         {
-            Console.WriteLine("ADD TO");
             view.Rows.Add(
-                new object[]
-                {
-                    p.Channel == PacketChannel.C2S ? "SEND" : "RECV", p.Header.ToHexString(), p.Size().ToString(),
-                    p.Channel.ToString(), p.Flags.ToString()
-                });
+                new object[] { p.Header.ToHexString(), p.Size().ToString(), p.Channel.ToString(), p.Flags.ToString() });
         }
     }
 }

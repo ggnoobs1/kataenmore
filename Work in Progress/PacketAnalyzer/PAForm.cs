@@ -17,34 +17,7 @@ namespace PacketAnalyzer
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-            PGridSend.Columns.Clear();
-        }
-
-
-        private void PGrid_MouseDown(object sender, MouseEventArgs e)
-        {
-/*
-            if (e.Button == MouseButtons.Right)
-            {
-                var hti = PGridSend.HitTest(e.X, e.Y);
-                PGridSend.ClearSelection();
-                PGridSend.Rows[hti.RowIndex].Selected = true;
-                var cells = PGridSend.Rows[hti.RowIndex].Cells;
-                var header = StringToByteArray(cells[1].ToString())[0];
-                DeleteRow_Click(new object(), new EventArgs());
-
-                if (cells[0].ToString() == "SEND")
-                {
-                    Program.BlockedSendPackets.Add(header);
-                    DeleteAll(header);
-                }
-                else
-                {
-                    Program.BlockedRecvPackets.Add(header);
-                    DeleteAll(header);
-                }
-            }
-          */
+            //PGridSend.Columns.Clear();
         }
 
         private void DeleteAll(byte header)
@@ -82,11 +55,11 @@ namespace PacketAnalyzer
                 PGridSend.ClearSelection();
                 PGridSend.Rows[hti.RowIndex].Selected = true;
                 listBox1.Items.Clear();
-                listBox1.Items.Add(Program.SendPackets[hti.RowIndex - 1].Dump());
+                listBox1.Items.Add(Program.SendPackets[hti.RowIndex].Dump());
             }
         }
 
-        private void PGridRecv_MouseClick(object sender, MouseEventArgs e)
+        private void PGridRecv_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -94,7 +67,7 @@ namespace PacketAnalyzer
                 PGridRecv.ClearSelection();
                 PGridRecv.Rows[hti.RowIndex].Selected = true;
                 listBox1.Items.Clear();
-                listBox1.Items.Add(Program.SendPackets[hti.RowIndex - 1].Dump());
+                listBox1.Items.Add(Program.SendPackets[hti.RowIndex].Dump());
             }
         }
     }
