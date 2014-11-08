@@ -67,7 +67,7 @@ namespace PacketAnalyzer
                 PGridRecv.ClearSelection();
                 PGridRecv.Rows[hti.RowIndex].Selected = true;
                 listBox1.Items.Clear();
-                listBox1.Items.Add(Program.SendPackets[hti.RowIndex].Dump());
+                listBox1.Items.Add(Program.RecvPackets[hti.RowIndex].Dump());
             }
         }
     }
