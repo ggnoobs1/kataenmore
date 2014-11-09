@@ -1,14 +1,16 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using SharpDX.Direct3D9;
 using Font = SharpDX.Direct3D9.Font;
+
+#endregion
 
 namespace Tracker
 {
@@ -19,7 +21,10 @@ namespace Tracker
     {
         public static Sprite Sprite;
         public static Texture CdFrameTexture;
-        private static readonly Dictionary<string, Texture> SummonerTextures = new Dictionary<string, Texture>(StringComparer.InvariantCultureIgnoreCase);
+
+        private static readonly Dictionary<string, Texture> SummonerTextures =
+            new Dictionary<string, Texture>(StringComparer.InvariantCultureIgnoreCase);
+
         public static Line ReadyLine;
         public static Font Text;
 
@@ -40,9 +45,11 @@ namespace Tracker
 
         static HbTracker()
         {
-            if(!Game.Version.Contains("4.19"))
-                SummonerSpellSlots = new SpellSlot[] { SpellSlot.Q, SpellSlot.W };
-                
+            if (!Game.Version.Contains("4.19"))
+            {
+                SummonerSpellSlots = new[] { SpellSlot.Q, SpellSlot.W };
+            }
+
             try
             {
                 foreach (var sName in SummonersNames)
@@ -53,7 +60,7 @@ namespace Tracker
                 Sprite = new Sprite(Drawing.Direct3DDevice);
                 CdFrameTexture = Texture.FromMemory(
                     Drawing.Direct3DDevice,
-                    (byte[])new ImageConverter().ConvertTo(Properties.Resources.hud, typeof(byte[])), 147, 27, 0,
+                    (byte[]) new ImageConverter().ConvertTo(Properties.Resources.hud, typeof(byte[])), 147, 27, 0,
                     Usage.None, Format.A1, Pool.Managed, Filter.Default, Filter.Default, 0);
 
                 ReadyLine = new Line(Drawing.Direct3DDevice) { Width = 2 };
@@ -85,6 +92,7 @@ namespace Tracker
             Config = menu.AddSubMenu(new Menu("CD Tracker", "CD Tracker"));
             Config.AddItem(new MenuItem("TrackAllies", "Track allies").SetValue(true));
             Config.AddItem(new MenuItem("TrackEnemies", "Track enemies").SetValue(true));
+            Config.AddItem(new MenuItem("TrackMe", "Track me").SetValue(false));
         }
 
         private static Texture GetSummonerTexture(string name)
@@ -134,11 +142,11 @@ namespace Tracker
             }
 
             return Texture.FromMemory(
-                Drawing.Direct3DDevice, (byte[])new ImageConverter().ConvertTo(bitmap, typeof(byte[])), 12, 240, 0,
+                Drawing.Direct3DDevice, (byte[]) new ImageConverter().ConvertTo(bitmap, typeof(byte[])), 12, 240, 0,
                 Usage.None, Format.A1, Pool.Managed, Filter.Default, Filter.Default, 0);
         }
 
-        
+
         private static void CurrentDomainOnDomainUnload(object sender, EventArgs eventArgs)
         {
             ReadyLine.Dispose();
@@ -162,7 +170,7 @@ namespace Tracker
 
         private static void Game_OnWndProc(WndEventArgs args)
         {
-            if (args.Msg != (uint)WindowsMessages.WM_KEYDOWN)
+            if (args.Msg != (uint) WindowsMessages.WM_KEYDOWN)
             {
                 return;
             }
@@ -201,14 +209,19 @@ namespace Tracker
 
                 foreach (var hero in
                     ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(hero => hero != null && hero.IsValid && !hero.IsMe && hero.IsHPBarRendered && (hero.IsEnemy && Config.Item("TrackEnemies").GetValue<bool>() || hero.IsAlly && Config.Item("TrackAllies").GetValue<bool>())))
+                        .Where(
+                            hero =>
+                                hero != null && hero.IsValid && (!hero.IsMe || Config.Item("TrackMe").GetValue<bool>()) &&
+                                hero.IsHPBarRendered &&
+                                (hero.IsEnemy && Config.Item("TrackEnemies").GetValue<bool>() ||
+                                 hero.IsAlly && Config.Item("TrackAllies").GetValue<bool>())))
                 {
                     Sprite.Begin();
 
                     var indicator = new HpBarIndicator { Unit = hero };
 
-                    X = (int)indicator.Position.X;
-                    Y = (int)indicator.Position.Y;
+                    X = (int) indicator.Position.X;
+                    Y = (int) indicator.Position.Y;
 
                     var k = 0;
                     foreach (var sSlot in SummonerSpellSlots)
@@ -220,8 +233,8 @@ namespace Tracker
                         var t = spell.CooldownExpires - Game.Time;
 
                         var percent = (Math.Abs(spell.Cooldown) > float.Epsilon) ? t / spell.Cooldown : 1f;
-                        var n = (t > 0) ? (int)(19 * (1f - percent)) : 19;
-                        var ts = TimeSpan.FromSeconds((int)t);
+                        var n = (t > 0) ? (int) (19 * (1f - percent)) : 19;
+                        var ts = TimeSpan.FromSeconds((int) t);
                         var s = t > 60 ? string.Format("{0}:{1:D2}", ts.Minutes, ts.Seconds) : String.Format("{0:0}", t);
                         if (t > 0)
                         {
@@ -308,5 +321,4 @@ namespace Tracker
             }
         }
     }
-    
 }

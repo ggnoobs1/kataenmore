@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -6,6 +8,8 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using Color = System.Drawing.Color;
+
+#endregion
 
 namespace Tracker
 {
@@ -136,13 +140,15 @@ namespace Tracker
             _defaultCircle.VisibleCondition +=
                 sender =>
                     WardTracker.Config.Item("Enabled").GetValue<bool>() &&
-                    !WardTracker.Config.Item("Details").GetValue<KeyBind>().Active && Render.OnScreen(Drawing.WorldToScreen(Position));
+                    !WardTracker.Config.Item("Details").GetValue<KeyBind>().Active &&
+                    Render.OnScreen(Drawing.WorldToScreen(Position));
             _defaultCircle.Add(0);
             _defaultCircleFilled = new Render.Circle(Position, 200, Color.FromArgb(25, Color), -142857, true);
             _defaultCircleFilled.VisibleCondition +=
                 sender =>
                     WardTracker.Config.Item("Enabled").GetValue<bool>() &&
-                    !WardTracker.Config.Item("Details").GetValue<KeyBind>().Active && Render.OnScreen(Drawing.WorldToScreen(Position));
+                    !WardTracker.Config.Item("Details").GetValue<KeyBind>().Active &&
+                    Render.OnScreen(Drawing.WorldToScreen(Position));
             _defaultCircleFilled.Add(-1);
 
             //Create the circle that shows the range
@@ -174,7 +180,7 @@ namespace Tracker
                 _missileLine.Add(0);
             }
 
-           
+
             //Create the timer text:
             if (Duration != int.MaxValue)
             {
@@ -182,7 +188,10 @@ namespace Tracker
                 _timerText.OutLined = true;
                 _timerText.PositionUpdate = () => Drawing.WorldToScreen(Position);
                 _timerText.Centered = true;
-                _timerText.VisibleCondition += sender => WardTracker.Config.Item("Enabled").GetValue<bool>() && Render.OnScreen(Drawing.WorldToScreen(Position));
+                _timerText.VisibleCondition +=
+                    sender =>
+                        WardTracker.Config.Item("Enabled").GetValue<bool>() &&
+                        Render.OnScreen(Drawing.WorldToScreen(Position));
 
                 _timerText.TextUpdate =
                     () =>
@@ -392,7 +401,7 @@ namespace Tracker
                 return;
             }
 
-            var missile = (Obj_SpellMissile)sender;
+            var missile = (Obj_SpellMissile) sender;
 
             if (!missile.SpellCaster.IsAlly)
             {
@@ -428,7 +437,7 @@ namespace Tracker
             {
                 return;
             }
-            var wardObject = (Obj_AI_Base)sender;
+            var wardObject = (Obj_AI_Base) sender;
 
             if (sender.IsAlly)
             {
@@ -440,11 +449,11 @@ namespace Tracker
                 if (String.Equals(
                     wardObject.BaseSkinName, wardData.ObjectBaseSkinName, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    var startT = Environment.TickCount - (int)((wardObject.MaxMana - wardObject.Mana) * 1000);
+                    var startT = Environment.TickCount - (int) ((wardObject.MaxMana - wardObject.Mana) * 1000);
                     DetectedWards.RemoveAll(
                         w =>
-                            w.Position.Distance(wardObject.Position) < 200 && (Math.Abs(w.StartT - startT) < 1000 || wardData.Type != WardType.Green) &&
-                            w.Remove());
+                            w.Position.Distance(wardObject.Position) < 200 &&
+                            (Math.Abs(w.StartT - startT) < 1000 || wardData.Type != WardType.Green) && w.Remove());
                     DetectedWards.Add(new DetectedWard(wardData, wardObject.Position, startT, wardObject));
                 }
             }
