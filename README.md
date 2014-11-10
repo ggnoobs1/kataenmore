@@ -6,12 +6,19 @@ Members
 ============
 Our current members are: Pqmailer, Esk0r/K0rtatu, andreluis034, iMeh.
 <br><b>Personal Github accounts:</b>
-<br><b>Pqmailer</b> https://github.com/pqmailer/ 
-<br><b>Esk0r:</b> https://github.com/Esk0r/
-<br><b>Andreluis034:</b> https://github.com/andreluis034/
-<br><b>iMeh:</b> https://github.com/ehmehe/
-<br><b>Hellsing:</b> https://github.com/Hellsing/
-<br><b>Trees:</b> https://github.com/trees-software/
+<br><b>iMeh</b>
+<br><b>Legacy</b>
+<br><b>Joduskame</b>
+<br><b>Kortatu</b>
+<br><b>Screeder</b>
+<br><b>Trees</b>
+<br><b>Beaving</b>
+<br><b>Eax</b>
+<br><b>Andreluis</b>
+<br><b>Hellsing</b>
+<br><b>Vis</b>
+<br><b>NikM</b>
+<br>
 Assemblies
 ============
 <b>Cho'Gath v. 1.1:</b> (Simple combo, drawing and some additional features)
