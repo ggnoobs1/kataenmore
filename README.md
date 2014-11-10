@@ -4,8 +4,6 @@ This is the <b>official</b> TC crew Organization.
 
 Members
 ============
-Our current members are: Pqmailer, Esk0r/K0rtatu, andreluis034, iMeh.
-<br><b>Personal Github accounts:</b>
 <br><b>iMeh</b>
 <br><b>Legacy</b>
 <br><b>Joduskame</b>
