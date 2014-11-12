@@ -54,8 +54,8 @@ namespace PacketAnalyzer
                 var hti = PGridSend.HitTest(e.X, e.Y);
                 PGridSend.ClearSelection();
                 PGridSend.Rows[hti.RowIndex].Selected = true;
-                listBox1.Items.Clear();
-                listBox1.Items.Add(Program.SendPackets[hti.RowIndex].Dump());
+                textBox1.Text = Program.SendPackets[hti.RowIndex].Dump();
+
             }
         }
 
@@ -66,8 +66,7 @@ namespace PacketAnalyzer
                 var hti = PGridRecv.HitTest(e.X, e.Y);
                 PGridRecv.ClearSelection();
                 PGridRecv.Rows[hti.RowIndex].Selected = true;
-                listBox1.Items.Clear();
-                listBox1.Items.Add(Program.RecvPackets[hti.RowIndex].Dump());
+                textBox1.Text = Program.RecvPackets[hti.RowIndex].Dump();
             }
         }
     }

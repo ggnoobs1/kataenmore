@@ -1,16 +1,16 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 
+#endregion
+
 namespace Sion
 {
-    class Program
+    internal class Program
     {
         private static Menu Config;
 
@@ -20,14 +20,18 @@ namespace Sion
         public static Spell E;
 
         public static Vector2 QCastPos = new Vector2();
-        static void Main(string[] args)
+
+        private static void Main(string[] args)
         {
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
 
-        static void Game_OnGameLoad(EventArgs args)
+        private static void Game_OnGameLoad(EventArgs args)
         {
-            if (ObjectManager.Player.BaseSkinName != "Sion") return;
+            if (ObjectManager.Player.BaseSkinName != "Sion")
+            {
+                return;
+            }
 
             //Spells
             Q = new Spell(SpellSlot.Q, 1050);
@@ -56,13 +60,17 @@ namespace Sion
             Config.SubMenu("Combo").AddItem(new MenuItem("UseQCombo", "Use Q").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseWCombo", "Use W").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "Use E").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(Config.Item("Orbwalk").GetValue<KeyBind>().Key, KeyBindType.Press)));
+            Config.SubMenu("Combo")
+                .AddItem(
+                    new MenuItem("ComboActive", "Combo!").SetValue(
+                        new KeyBind(Config.Item("Orbwalk").GetValue<KeyBind>().Key, KeyBindType.Press)));
 
-            
+
             Config.AddSubMenu(new Menu("R", "R"));
             Config.SubMenu("R").AddItem(new MenuItem("AntiCamLock", "Avoid locking camera").SetValue(true));
-            Config.SubMenu("R").AddItem(new MenuItem("MoveToMouse", "Move to mouse (Exploit)").SetValue(false));//Disabled by default since its not legit Keepo
-            
+            Config.SubMenu("R").AddItem(new MenuItem("MoveToMouse", "Move to mouse (Exploit)").SetValue(false));
+                //Disabled by default since its not legit Keepo
+
 
             Config.AddToMainMenu();
 
@@ -70,9 +78,8 @@ namespace Sion
             Game.OnGameUpdate += Game_OnGameUpdate;
             Game.OnGameProcessPacket += Game_OnGameProcessPacket;
             Drawing.OnDraw += Drawing_OnDraw;
-            Obj_AI_Hero.OnProcessSpellCast += ObjAiHeroOnOnProcessSpellCast;
+            Obj_AI_Base.OnProcessSpellCast += ObjAiHeroOnOnProcessSpellCast;
         }
-
 
 
         private static void ObjAiHeroOnOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
@@ -83,24 +90,21 @@ namespace Sion
             }
         }
 
-        static void Drawing_OnDraw(EventArgs args)
+        private static void Drawing_OnDraw(EventArgs args)
         {
             Utility.DrawCircle(ObjectManager.Player.Position, Q.Range, System.Drawing.Color.White);
         }
 
-        static void Game_OnGameProcessPacket(GamePacketEventArgs args)
+        private static void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
-            if (args.PacketData[0] == 0xFE && Config.Item("AntiCamLock").GetValue<bool>())
+            if (Config.Item("AntiCamLock").GetValue<bool>() && args.PacketData[0] == Packet.MultiPacket.Header &&
+                args.PacketData[5] == (byte) Packet.MultiPacketType.LockCamera)
             {
-                var p = new GamePacket(args.PacketData);
-                if (p.ReadInteger(1) == ObjectManager.Player.NetworkId && p.Size() > 9)
-                {
-                    args.Process = false;
-                }
+                args.Process = false;
             }
         }
 
-        static void Game_OnGameUpdate(EventArgs args)
+        private static void Game_OnGameUpdate(EventArgs args)
         {
             //Casting R
             if (ObjectManager.Player.HasBuff("SionR"))
@@ -115,7 +119,8 @@ namespace Sion
 
             if (Config.Item("ComboActive").GetValue<KeyBind>().Active)
             {
-                var qTarget = SimpleTs.GetTarget(!Q.IsCharging ? Q.ChargedMaxRange / 2 : Q.ChargedMaxRange, SimpleTs.DamageType.Physical);
+                var qTarget = SimpleTs.GetTarget(
+                    !Q.IsCharging ? Q.ChargedMaxRange / 2 : Q.ChargedMaxRange, SimpleTs.DamageType.Physical);
 
                 var eTarget = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
 
@@ -135,20 +140,23 @@ namespace Sion
                         points.Add(end + Q.ChargedMaxRange * direction - normal * (Q.Width + hitBox));
                         points.Add(end + Q.ChargedMaxRange * direction + normal * (Q.Width + hitBox));
 
-                        for (int i = 0; i <= points.Count - 1; i++)
+                        for (var i = 0; i <= points.Count - 1; i++)
                         {
                             var A = points[i];
                             var B = points[i == points.Count - 1 ? 0 : i + 1];
 
                             if (qTarget.ServerPosition.To2D().Distance(A, B, true, true) < 50 * 50)
                             {
-                                Packet.C2S.ChargedCast.Encoded(new Packet.C2S.ChargedCast.Struct((SpellSlot)((byte)Q.Slot), Game.CursorPos.X, Game.CursorPos.X, Game.CursorPos.X)).Send();
+                                Packet.C2S.ChargedCast.Encoded(
+                                    new Packet.C2S.ChargedCast.Struct(
+                                        (SpellSlot) ((byte) Q.Slot), Game.CursorPos.X, Game.CursorPos.X,
+                                        Game.CursorPos.X)).Send();
                             }
                         }
                         return;
                     }
-                    
-                    if(Q.IsReady())
+
+                    if (Q.IsReady())
                     {
                         Q.StartCharging(qTarget.ServerPosition);
                     }

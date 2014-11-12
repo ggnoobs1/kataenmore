@@ -29,20 +29,20 @@
         private void InitializeComponent()
         {
             this.PGridSend = new System.Windows.Forms.DataGridView();
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.btnClear = new System.Windows.Forms.Button();
-            this.chkRecv = new System.Windows.Forms.CheckBox();
-            this.chkSend = new System.Windows.Forms.CheckBox();
             this.Header = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Size = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Channel = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Flags = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.PGridRecv = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnClear = new System.Windows.Forms.Button();
+            this.chkRecv = new System.Windows.Forms.CheckBox();
+            this.chkSend = new System.Windows.Forms.CheckBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.PGridSend)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PGridRecv)).BeginInit();
@@ -61,63 +61,6 @@
             this.PGridSend.Size = new System.Drawing.Size(246, 297);
             this.PGridSend.TabIndex = 6;
             this.PGridSend.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PGridSend_MouseDown);
-            // 
-            // listBox1
-            // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(6, 345);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(619, 30);
-            this.listBox1.TabIndex = 7;
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.PGridRecv);
-            this.groupBox1.Controls.Add(this.btnClear);
-            this.groupBox1.Controls.Add(this.chkRecv);
-            this.groupBox1.Controls.Add(this.listBox1);
-            this.groupBox1.Controls.Add(this.chkSend);
-            this.groupBox1.Controls.Add(this.PGridSend);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(637, 401);
-            this.groupBox1.TabIndex = 8;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "groupBox1";
-            // 
-            // btnClear
-            // 
-            this.btnClear.Location = new System.Drawing.Point(126, 14);
-            this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(84, 25);
-            this.btnClear.TabIndex = 11;
-            this.btnClear.Text = "Clear";
-            this.btnClear.UseVisualStyleBackColor = true;
-            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
-            // 
-            // chkRecv
-            // 
-            this.chkRecv.AutoSize = true;
-            this.chkRecv.Checked = true;
-            this.chkRecv.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkRecv.Location = new System.Drawing.Point(323, 19);
-            this.chkRecv.Name = "chkRecv";
-            this.chkRecv.Size = new System.Drawing.Size(55, 17);
-            this.chkRecv.TabIndex = 9;
-            this.chkRecv.Text = "RECV";
-            this.chkRecv.UseVisualStyleBackColor = true;
-            // 
-            // chkSend
-            // 
-            this.chkSend.AutoSize = true;
-            this.chkSend.Checked = true;
-            this.chkSend.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSend.Location = new System.Drawing.Point(6, 19);
-            this.chkSend.Name = "chkSend";
-            this.chkSend.Size = new System.Drawing.Size(56, 17);
-            this.chkSend.TabIndex = 8;
-            this.chkSend.Text = "SEND";
-            this.chkSend.UseVisualStyleBackColor = true;
             // 
             // Header
             // 
@@ -158,6 +101,21 @@
             this.Flags.ReadOnly = true;
             this.Flags.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Flags.Width = 60;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.textBox1);
+            this.groupBox1.Controls.Add(this.PGridRecv);
+            this.groupBox1.Controls.Add(this.btnClear);
+            this.groupBox1.Controls.Add(this.chkRecv);
+            this.groupBox1.Controls.Add(this.chkSend);
+            this.groupBox1.Controls.Add(this.PGridSend);
+            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(745, 401);
+            this.groupBox1.TabIndex = 8;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "groupBox1";
             // 
             // PGridRecv
             // 
@@ -213,11 +171,52 @@
             this.dataGridViewTextBoxColumn4.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridViewTextBoxColumn4.Width = 60;
             // 
+            // btnClear
+            // 
+            this.btnClear.Location = new System.Drawing.Point(126, 14);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(84, 25);
+            this.btnClear.TabIndex = 11;
+            this.btnClear.Text = "Clear";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // 
+            // chkRecv
+            // 
+            this.chkRecv.AutoSize = true;
+            this.chkRecv.Checked = true;
+            this.chkRecv.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkRecv.Location = new System.Drawing.Point(323, 19);
+            this.chkRecv.Name = "chkRecv";
+            this.chkRecv.Size = new System.Drawing.Size(55, 17);
+            this.chkRecv.TabIndex = 9;
+            this.chkRecv.Text = "RECV";
+            this.chkRecv.UseVisualStyleBackColor = true;
+            // 
+            // chkSend
+            // 
+            this.chkSend.AutoSize = true;
+            this.chkSend.Checked = true;
+            this.chkSend.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSend.Location = new System.Drawing.Point(6, 19);
+            this.chkSend.Name = "chkSend";
+            this.chkSend.Size = new System.Drawing.Size(56, 17);
+            this.chkSend.TabIndex = 8;
+            this.chkSend.Text = "SEND";
+            this.chkSend.UseVisualStyleBackColor = true;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(6, 345);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(563, 20);
+            this.textBox1.TabIndex = 13;
+            // 
             // PAForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(660, 418);
+            this.ClientSize = new System.Drawing.Size(851, 418);
             this.Controls.Add(this.groupBox1);
             this.Name = "PAForm";
             this.Text = "Packet Analyzer";
@@ -233,7 +232,6 @@
 
         public System.Windows.Forms.DataGridView PGridSend;
         public System.Windows.Forms.DataGridViewTextBoxColumn pSize;
-        public System.Windows.Forms.ListBox listBox1;
         public System.Windows.Forms.GroupBox groupBox1;
         public System.Windows.Forms.CheckBox chkRecv;
         public System.Windows.Forms.CheckBox chkSend;
@@ -247,6 +245,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+        private System.Windows.Forms.TextBox textBox1;
 
     }
 }
