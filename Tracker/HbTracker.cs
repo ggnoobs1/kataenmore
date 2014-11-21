@@ -45,11 +45,6 @@ namespace Tracker
 
         static HbTracker()
         {
-            if (!Game.Version.Contains("4.19"))
-            {
-                SummonerSpellSlots = new[] { SpellSlot.Q, SpellSlot.W };
-            }
-
             try
             {
                 foreach (var sName in SummonersNames)
