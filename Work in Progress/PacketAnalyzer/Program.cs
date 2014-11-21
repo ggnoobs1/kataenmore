@@ -70,7 +70,7 @@ namespace PacketAnalyzer
         {
             Application.EnableVisualStyles();
             Form1.Show();
-            //Application.Run(Form1);
+            Application.Run(Form1);
         }
 
         private static void AddTo(this DataGridView view, GamePacket p)
