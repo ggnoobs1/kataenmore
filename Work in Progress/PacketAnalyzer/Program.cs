@@ -41,7 +41,6 @@ namespace PacketAnalyzer
             }
 
             Form1.Close();
-            Application.Exit();
         }
 
         private static void Game_OnGameSendPacket(GamePacketEventArgs args)
