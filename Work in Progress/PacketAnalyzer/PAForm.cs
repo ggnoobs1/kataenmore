@@ -22,7 +22,7 @@ namespace PacketAnalyzer
 
         private void DeleteAll(byte header)
         {
-            foreach (var row in
+            foreach (DataGridViewRow row in
                 PGridSend.Rows.Cast<DataGridViewRow>()
                     .Where(row => StringToByteArray(row.Cells[1].ToString())[0] == header))
             {
@@ -33,7 +33,7 @@ namespace PacketAnalyzer
 
         private void DeleteRow_Click(object sender, EventArgs e)
         {
-            var rowToDelete = PGridSend.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+            int rowToDelete = PGridSend.Rows.GetFirstRow(DataGridViewElementStates.Selected);
             PGridSend.Rows.RemoveAt(rowToDelete);
             PGridSend.ClearSelection();
         }
@@ -49,25 +49,42 @@ namespace PacketAnalyzer
 
         private void PGridSend_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (e.Button != MouseButtons.Left)
             {
-                var hti = PGridSend.HitTest(e.X, e.Y);
-                PGridSend.ClearSelection();
-                PGridSend.Rows[hti.RowIndex].Selected = true;
-                textBox1.Text = Program.SendPackets[hti.RowIndex].Dump();
-
+                return;
             }
+
+            DataGridView.HitTestInfo hti = PGridSend.HitTest(e.X, e.Y);
+            PGridSend.ClearSelection();
+
+            if (Program.SendPackets.Count < hti.RowIndex + 1)
+            {
+                textBox1.Text = "";
+                return;
+            }
+
+            PGridSend.Rows[hti.RowIndex].Selected = true;
+            textBox1.Text = Program.SendPackets[hti.RowIndex].Dump();
         }
 
         private void PGridRecv_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (e.Button != MouseButtons.Left)
             {
-                var hti = PGridRecv.HitTest(e.X, e.Y);
-                PGridRecv.ClearSelection();
-                PGridRecv.Rows[hti.RowIndex].Selected = true;
-                textBox1.Text = Program.RecvPackets[hti.RowIndex].Dump();
+                return;
             }
+
+            DataGridView.HitTestInfo hti = PGridRecv.HitTest(e.X, e.Y);
+            PGridRecv.ClearSelection();
+
+            if (Program.RecvPackets.Count < hti.RowIndex + 1)
+            {
+                textBox1.Text = "";
+                return;
+            }
+
+            PGridRecv.Rows[hti.RowIndex].Selected = true;
+            textBox1.Text = Program.RecvPackets[hti.RowIndex].Dump();
         }
     }
 }
