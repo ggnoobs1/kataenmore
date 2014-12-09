@@ -5,6 +5,7 @@ This is the <b>official</b> TC crew Organization.
 Members
 ============
 <b>iMeh</b>
+<b>GNOOBS1</b>
 <br><b>Legacy</b>
 <br><b>Joduskame</b>
 <br><b>Kortatu</b>
