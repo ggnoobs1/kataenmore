@@ -12,11 +12,7 @@ Members
 <br><b>Screeder</b>
 <br><b>Trees</b>
 <br><b>Beaving</b>
-<br><b>Eax</b>
-<br><b>Andreluis</b>
 <br><b>Hellsing</b>
-<br><b>Vis</b>
-<br><b>NikM</b>
 <br>
 Assemblies
 ============
